@@ -29,7 +29,7 @@ def validar_telefone(tel):
     padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
     return re.match(padrao, tel)
 
-# 2. CSS MASTER (Ajustado para botões e inputs)
+# 2. CSS MASTER
 st.markdown("""
     <style>
     [data-testid="stHeader"] { background-color: rgba(0,0,0,0) !important; }
@@ -54,26 +54,19 @@ st.markdown("""
         text-transform: uppercase;
         border-radius: 8px !important;
         width: 100% !important;
-        margin-top: 5px !important;
     }
 
     .secao-titulo { color: #E50914; font-weight: 900; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 5px; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVEGAÇÃO
-def render_menu():
+# 3. NAVEGAÇÃO (APENAS SIDEBAR)
+with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>FERRAMENTAS</h2>", unsafe_allow_html=True)
     st.write("---")
     if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
     if st.button("🔴 ÁREA DE MEMBROS"): st.session_state.tela = "login_membro"; st.rerun()
     if st.button("⚙️ ACESSO ADMIN"): st.session_state.tela = "login_admin"; st.rerun()
-
-with st.sidebar:
-    render_menu()
-
-with st.expander("📱 MENU DE NAVEGAÇÃO RÁPIDA"):
-    render_menu()
 
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
@@ -109,7 +102,6 @@ elif st.session_state.tela == "login_admin":
         if st.button("ACESSAR COMANDO"):
             if senha == "55420": st.session_state.tela = "master"; st.rerun()
 
-# --- ÁREA MASTER CORRIGIDA COM BOTÕES ABAIXO ---
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
     st.write("---")
