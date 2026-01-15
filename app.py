@@ -26,7 +26,7 @@ def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: 
         f.write(chave + "\n")
 
-# 2. CSS REVISADO (FUNDO BRANCO NOS INPUTS CONFORME SOLICITADO)
+# 2. CSS REVISADO
 st.markdown("""
     <style>
     [data-testid="stHeader"], [data-testid="sidebar-button"] { display: none !important; }
@@ -41,7 +41,7 @@ st.markdown("""
         font-weight: 500 !important;
     }
 
-    /* Botões da Central do Membro (Mantidos da versão anterior) */
+    /* Botões da Central do Membro */
     .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -68,8 +68,10 @@ with st.sidebar:
     if st.button("⚙️ ACESSO ADMIN", key="nav_a"): st.session_state.tela = "login_admin"; st.rerun()
 
 # 4. LÓGICA DE TELAS
+
+# --- TELA HOME (ALTERADA CONFORME SOLICITADO) ---
 if st.session_state.tela == "home":
-    st.markdown('<h1 style="font-size:4rem; color:#E50914; text-align:center; margin-top:80px;">Kerigma Maanaim</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="font-size:3.5rem; color:#E50914; text-align:center; margin-top:80px; font-weight:900;">SEJA BEM-VINDO A EQUIPE MIDIA...</h1>', unsafe_allow_html=True)
 
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; margin-top:50px;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
@@ -99,7 +101,6 @@ elif st.session_state.tela == "login_admin":
         if st.button("ACESSAR COMANDO"):
             if senha == "55420": st.session_state.tela = "master"; st.rerun()
 
-# --- TELA: MASTER (FUNDO BRANCO NOS CAMPOS) ---
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
     st.write("---")
@@ -109,7 +110,6 @@ elif st.session_state.tela == "master":
     t2.markdown('<p class="secao-titulo">📢 Mural de Avisos</p><p class="secao-desc">Atualize o Maanaim</p>', unsafe_allow_html=True)
     t3.markdown('<p class="secao-titulo">🔔 Notificações</p><p class="secao-desc">Envie alertas diretos</p>', unsafe_allow_html=True)
 
-    # LINHA DE ESCRITA (Fundo Branco via CSS)
     w1, w2, w3 = st.columns(3)
     with w1:
         st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "Aguardando...", language="text")
@@ -118,7 +118,6 @@ elif st.session_state.tela == "master":
     with w3:
         st.text_input("Notif", placeholder="Assunto do alerta...", label_visibility="collapsed")
 
-    # LINHA DE BOTÕES
     b1, b2, b3 = st.columns(3)
     with b1:
         if st.button("✨ GERAR NOVA CHAVE"):
