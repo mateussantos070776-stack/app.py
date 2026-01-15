@@ -71,7 +71,7 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Estilo dos Botões Vermelhos */
+    /* Estilo Global dos Botões */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -89,14 +89,19 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
     }
 
-    /* Botões na Barra Lateral */
-    [data-testid="stSidebarNav"] {display: none;} /* Esconde nav padrão */
-    
+    /* Estilo Específico da Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #080808 !important;
+        border-right: 1px solid rgba(229, 9, 20, 0.2) !important;
+        min-width: 300px !important;
+    }
+
     [data-testid="stSidebar"] div.stButton > button {
         width: 100% !important;
-        max-width: 250px !important;
-        height: 45px !important;
-        margin-bottom: 15px;
+        max-width: 280px !important;
+        height: 50px !important;
+        margin-bottom: 20px !important;
+        text-align: center !important;
     }
 
     /* Estilo dos Cards e Inputs */
@@ -106,14 +111,10 @@ st.markdown("""
         border-radius: 20px;
         padding: 30px;
         text-align: center;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         margin-bottom: 10px;
     }
     
-    .card-janela:hover { border-color: #E50914; }
-    .card-janela h3 { color: #E50914; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; }
-
     div[data-testid="stTextInput"] input {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -121,33 +122,25 @@ st.markdown("""
         border-radius: 10px !important;
         text-align: center;
     }
-
-    [data-testid="stSidebar"] { 
-        background-color: #080808 !important; 
-        border-right: 1px solid rgba(229, 9, 20, 0.2) !important; 
-    }
     </style>
     """, unsafe_allow_html=True)
 
-# 4. BARRA LATERAL (SIDEBAR DEFINIDA)
+# 4. BARRA LATERAL (SIDEBAR FIXA)
 with st.sidebar:
-    st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
-    st.write("---")
+    st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900; margin-bottom:30px;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     
-    # Botão Home no topo
-    if st.button("🏠 HOME"):
+    # Navegação centralizada na lateral
+    if st.button("🏠 HOME", use_container_width=True):
         st.session_state.tela = "home"
         st.session_state.sub_view = None
         st.session_state.membro_autenticado = False
         st.rerun()
 
-    # Botão Área de Membros
-    if st.button("🔴 ÁREA DE MEMBROS"):
+    if st.button("🔴 ÁREA DE MEMBROS", use_container_width=True):
         st.session_state.tela = "login_membro"
         st.rerun()
 
-    # Botão Acesso Admin
-    if st.button("⚙️ ACESSO ADMIN"):
+    if st.button("⚙️ ACESSO ADMIN", use_container_width=True):
         st.session_state.tela = "login_admin"
         st.rerun()
 
@@ -182,13 +175,13 @@ elif st.session_state.tela == "login_admin":
     st.markdown("<h2 style='text-align:center; color:#E50914;'>ACESSO RESTRITO LIDERANÇA</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        senha_admin = st.text_input("Insira a Senha Administrativa", type="password")
-        if st.button("AUTENTICAR MASTER"):
+        senha_admin = st.text_input("Senha Administrativa", type="password")
+        if st.button("AUTENTICAR"):
             if senha_admin == "55420":
                 st.session_state.tela = "master"
                 st.rerun()
             else:
-                st.error("Senha Administrativa Incorreta.")
+                st.error("Acesso Negado.")
 
 # TELA: LOGIN MEMBRO
 elif st.session_state.tela == "login_membro":
@@ -196,29 +189,13 @@ elif st.session_state.tela == "login_membro":
     st.markdown("<h2 style='text-align:center; color:#E50914;'>VALIDAÇÃO DE INTEGRANTE</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        chave_esc = st.text_input("Chave para Escalas & Presença", type="password")
-        if st.button("ACESSAR ESCALAS"):
+        chave_esc = st.text_input("Chave de Escala", type="password")
+        if st.button("ACESSAR"):
             ativas = listar_chaves(ARQUIVO_ATIVAS)
             if chave_esc in ativas or chave_esc == "55420":
                 st.session_state.membro_autenticado = True
                 st.session_state.tela = "escalas"
                 st.rerun()
-            else:
-                st.error("Acesso negado.")
-
-# TELA: ESCALAS & PRESENÇA
-elif st.session_state.tela == "escalas":
-    if not st.session_state.membro_autenticado:
-        st.session_state.tela = "login_membro"
-        st.rerun()
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ESCALAS & PRESENÇA</h1>", unsafe_allow_html=True)
-    col_e1, col_e2 = st.columns(2)
-    with col_e1:
-        st.markdown('<div class="card-janela"><h3>📅 Escala</h3><p>Culto Domingo - 19:00</p></div>', unsafe_allow_html=True)
-    with col_e2:
-        st.markdown('<div class="card-janela"><h3>🙋 Confirmar</h3></div>', unsafe_allow_html=True)
-        nome = st.text_input("Nome")
-        if st.button("ENVIAR"): st.success("Registrado!")
 
 # TELA: PAINEL MASTER
 elif st.session_state.tela == "master":
@@ -229,23 +206,17 @@ elif st.session_state.tela == "master":
         if st.button("✨ GERAR NOVA CHAVE"):
             nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
             salvar_chave(nova, ARQUIVO_ATIVAS)
-            st.success(f"CHAVE GERADA: {nova}")
+            st.success(f"CHAVE: {nova}")
         st.markdown('</div>', unsafe_allow_html=True)
     with col_adm2:
         st.subheader("CHAVES ATIVAS")
-        chaves = listar_chaves(ARQUIVO_ATIVAS)
-        for c in chaves: st.code(c)
+        for c in listar_chaves(ARQUIVO_ATIVAS): st.code(c)
+
+# TELA: ESCALAS
+elif st.session_state.tela == "escalas":
+    st.markdown("<h1 style='color:#E50914; text-align:center;'>ESCALAS</h1>", unsafe_allow_html=True)
+    st.info("Área de escalas em manutenção técnica.")
 
 # TELA: EXCLUSIVO MÍDIA
 elif st.session_state.tela == "membro":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
-    titulos = ["📸 FOTOS", "🎥 VÍDEOS", "🎨 ARTES", "📝 ROTEIROS", "🎵 ÁUDIOS", "🗓️ AGENDA"]
-    chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
-    for i in range(2):
-        cols = st.columns(3)
-        for j in range(3):
-            idx = (i * 3) + j
-            with cols[j]:
-                st.markdown(f'<div class="card-janela" style="height:220px;"><h3>{titulos[idx]}</h3></div>', unsafe_allow_html=True)
-                if st.button("ACESSAR", key=chaves_btn[idx]):
-                    if titulos[idx] == "📸 FOTOS": st.session_state.sub_view = "fotos"
+    st.markdown("<h1 style='color:#E50914; text-align:center;'>CONTEÚDO EXCLUSIVO</h1>", unsafe_allow_html=True)
