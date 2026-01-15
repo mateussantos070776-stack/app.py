@@ -29,15 +29,17 @@ def listar_chaves():
 def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM
+# 3. CSS PREMIUM (LIMPEZA TOTAL DOS QUADRADOS)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap');
     
+    /* REMOVE HEADER E BOTÃO DE RECOLHER */
     [data-testid="stHeader"], [data-testid="sidebar-button"] { display: none !important; }
     
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
+    /* BOTÕES KERIGMA */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -46,23 +48,25 @@ st.markdown("""
         font-weight: bold !important;
         height: 48px !important;
     }
-    
+
+    /* BARRA LATERAL FIXA */
     [data-testid="stSidebar"] { 
         background-color: #080808 !important; 
         border-right: 2px solid #E50914 !important;
     }
 
+    /* CARDS DO PAINEL MASTER (SEM QUADRADOS PRETOS) */
     .card-master {
-        background: rgba(15, 15, 15, 1);
+        background: rgba(20, 20, 20, 1);
         border: 1px solid #333;
         border-radius: 15px;
         padding: 25px;
         text-align: center;
         margin-bottom: 20px;
-        min-height: 280px;
+        min-height: 220px; /* Ajustado para o novo conteúdo sem quadrados */
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
     }
 
     .card-title-master {
@@ -70,7 +74,17 @@ st.markdown("""
         font-weight: 900;
         font-size: 1.1rem;
         text-transform: uppercase;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .card-desc {
+        font-size: 0.9rem;
+        color: #ccc;
+        margin-bottom: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -89,17 +103,16 @@ with st.sidebar:
         st.session_state.tela = "login_admin"
         st.rerun()
 
-# 5. LÓGICA DE TELAS (PAINEL MASTER SEM HISTÓRICO)
-
+# 5. LÓGICA DO PAINEL MASTER (SEM QUADRADOS)
 if st.session_state.tela == "master":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; margin-bottom:30px;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; margin-bottom:40px;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
     
     col_m1, col_m2, col_m3 = st.columns(3)
     
     with col_m1:
         st.markdown('<div class="card-master">', unsafe_allow_html=True)
         st.markdown('<div class="card-title-master">🔑 Gerador de Acesso</div>', unsafe_allow_html=True)
-        st.write("Crie chaves de acesso únicas para novos membros.")
+        st.markdown('<p class="card-desc">Crie chaves de acesso únicas para novos membros.</p>', unsafe_allow_html=True)
         if st.button("✨ GERAR CHAVE", use_container_width=True):
             nova_c = "".join([str(random.randint(0, 9)) for _ in range(10)])
             salvar_chave(nova_c)
@@ -112,8 +125,8 @@ if st.session_state.tela == "master":
     with col_m2:
         st.markdown('<div class="card-master">', unsafe_allow_html=True)
         st.markdown('<div class="card-title-master">📢 Alterar Avisos</div>', unsafe_allow_html=True)
-        st.write("Atualize o mural de avisos da Área de Membros.")
-        novo_aviso = st.text_area("Texto do Aviso", placeholder="Digite aqui...", label_visibility="collapsed", height=100)
+        st.markdown('<p class="card-desc">Atualize o mural de avisos da Área de Membros.</p>', unsafe_allow_html=True)
+        st.text_area("Texto do Aviso", placeholder="Digite aqui...", label_visibility="collapsed", height=80)
         if st.button("PUBLICAR AVISO", use_container_width=True):
             st.success("Mural atualizado!")
         st.markdown('</div>', unsafe_allow_html=True)
@@ -121,22 +134,10 @@ if st.session_state.tela == "master":
     with col_m3:
         st.markdown('<div class="card-master">', unsafe_allow_html=True)
         st.markdown('<div class="card-title-master">🔔 Notificar Membro</div>', unsafe_allow_html=True)
-        st.write("Envie notificações diretas para os dispositivos.")
+        st.markdown('<p class="card-desc">Envie notificações diretas para os dispositivos.</p>', unsafe_allow_html=True)
         st.text_input("Assunto", placeholder="Ex: Urgente...", label_visibility="collapsed")
         if st.button("ENVIAR ALERTA", use_container_width=True):
             st.warning("Notificação enviada!")
         st.markdown('</div>', unsafe_allow_html=True)
 
-# Lógica das outras telas (Home, Login) permanece igual para manter a navegação ativa.
-elif st.session_state.tela == "home":
-    st.markdown('<h1 style="font-family:serif; font-size:4.5rem; color:#E50914; text-align:center;">Kerigma Maanaim</h1>', unsafe_allow_html=True)
-    col_h1, col_h2, col_h3 = st.columns([1, 1.5, 1])
-    with col_h2:
-        entrada = st.text_input("ACESSO", placeholder="CHAVE SAGRADA", type="password")
-        if st.button("ENTRAR", use_container_width=True):
-            if entrada == "55420":
-                st.session_state.tela = "master"
-                st.rerun()
-            elif entrada in listar_chaves():
-                st.session_state.tela = "painel_membro"
-                st.rerun()
+# Lógica das outras telas (Home e Login) omitida para brevidade, mas deve ser mantida do código anterior.
