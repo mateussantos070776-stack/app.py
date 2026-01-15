@@ -11,68 +11,79 @@ st.set_page_config(
 
 # Inicialização de estados
 if 'tela' not in st.session_state:
-    st.session_state.tela = "master" # Definido como master para visualização direta
+    st.session_state.tela = "master"
 if 'chave_gerada' not in st.session_state:
     st.session_state.chave_gerada = ""
 
-# 2. CSS PARA REGULAR O ALINHAMENTO (REMOVENDO OS QUADRADOS)
+# 2. CSS PARA LIMPEZA TOTAL E ALINHAMENTO (SEM QUADRADOS PRETOS)
 st.markdown("""
     <style>
-    /* REMOVE HEADER E SETA */
-    [data-testid="stHeader"], [data-testid="sidebar-button"] { display: none !important; }
+    /* REMOVE ELEMENTOS DESNECESSÁRIOS */
+    [data-testid="stHeader"], [data-testid="sidebar-button"], [data-testid="stVerticalBlock"] > div:empty {
+        display: none !important;
+    }
     
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
 
-    /* ESTILO DA BARRA LATERAL FIXA */
+    /* BARRA LATERAL */
     [data-testid="stSidebar"] { 
         background-color: #080808 !important; 
         border-right: 2px solid #E50914 !important;
     }
 
-    /* REGULAGEM DAS JANELAS (CARDS) */
-    .card-master-fix {
-        background: rgba(20, 20, 20, 1);
+    /* JANELAS MASTER LIMPAS E ALINHADAS */
+    .card-master-final {
+        background: #111111;
         border: 1px solid #333;
-        border-radius: 15px;
-        padding: 30px;
-        margin-bottom: 10px;
-        height: 380px; /* ALTURA FIXA PARA TODAS AS JANELAS */
+        border-radius: 12px;
+        padding: 25px;
+        height: 350px; /* Altura fixa para simetria total */
         display: flex;
         flex-direction: column;
-        justify-content: space-between; /* GARANTE QUE O BOTÃO FIQUE NA BASE */
+        justify-content: flex-start;
+        transition: 0.3s;
     }
 
-    .card-header {
+    .card-master-final:hover {
+        border-color: #E50914;
+    }
+
+    .title-red {
+        color: #E50914;
+        font-weight: 900;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        margin-bottom: 5px;
         text-align: center;
     }
 
-    .card-title-kerigma {
-        color: #E50914;
-        font-weight: 900;
-        font-size: 1.2rem;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-    }
-
-    .card-desc-kerigma {
+    .desc-gray {
         font-size: 0.85rem;
         color: #888;
+        text-align: center;
         margin-bottom: 20px;
     }
 
-    /* BOTÕES UNIFORMES */
+    /* ESTILIZAÇÃO DE INPUTS PARA FICAREM DISCRETOS */
+    .stTextInput input, .stTextArea textarea {
+        background-color: #1a1a1a !important;
+        color: white !important;
+        border: 1px solid #333 !important;
+    }
+
+    /* BOTÃO PADRÃO KERIGMA */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
         width: 100% !important;
         border: none !important;
         font-weight: bold !important;
-        height: 45px !important;
+        text-transform: uppercase;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL (FIXA CONFORME SOLICITADO)
+# 3. BARRA LATERAL
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -80,47 +91,39 @@ with st.sidebar:
     st.button("🔴 ÁREA DE MEMBROS", use_container_width=True)
     st.button("⚙️ ACESSO ADMIN", use_container_width=True)
 
-# 4. PAINEL MASTER ORGANIZADO (CENTRAL DE COMANDO)
+# 4. PAINEL CENTRAL (SEM OS BLOCOS PRETOS DAS IMAGENS)
 st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
 st.write("---")
 
-col_1, col_2, col_3 = st.columns(3)
+col1, col2, col3 = st.columns(3)
 
-# COLUNA 1: GERADOR
-with col_1:
-    st.markdown('<div class="card-master-fix">', unsafe_allow_html=True)
-    st.markdown('<div class="card-header"><div class="card-title-kerigma">🔑 Gerador de Acesso</div><div class="card-desc-kerigma">Crie chaves únicas para novos membros</div></div>', unsafe_allow_html=True)
-    
-    # Espaçamento para alinhar com os inputs das outras colunas
-    st.write("") 
-    if st.button("✨ GERAR NOVA CHAVE", key="btn_gen"):
+with col1:
+    st.markdown('<div class="card-master-final">', unsafe_allow_html=True)
+    st.markdown('<p class="title-red">🔑 Gerador de Acesso</p>', unsafe_allow_html=True)
+    st.markdown('<p class="desc-gray">Crie chaves únicas para novos membros</p>', unsafe_allow_html=True)
+    st.write("###") # Espaçador
+    if st.button("✨ GERAR NOVA CHAVE"):
         st.session_state.chave_gerada = "".join([str(random.randint(0, 9)) for _ in range(10)])
     
     if st.session_state.chave_gerada:
-        st.code(st.session_state.chave_gerada, language="text")
-    else:
-        st.info("Aguardando geração...")
+        st.info(f"Chave: {st.session_state.chave_gerada}")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# COLUNA 2: AVISOS
-with col_2:
-    st.markdown('<div class="card-master-fix">', unsafe_allow_html=True)
-    st.markdown('<div class="card-header"><div class="card-title-kerigma">📢 Alterar Avisos</div><div class="card-desc-kerigma">Atualize o mural da área de membros</div></div>', unsafe_allow_html=True)
-    
-    aviso_txt = st.text_area("Mensagem do Mural", placeholder="Digite o aviso aqui...", height=120, label_visibility="collapsed")
-    
-    if st.button("PUBLICAR NO MURAL", key="btn_aviso"):
+with col2:
+    st.markdown('<div class="card-master-final">', unsafe_allow_html=True)
+    st.markdown('<p class="title-red">📢 Alterar Avisos</p>', unsafe_allow_html=True)
+    st.markdown('<p class="desc-gray">Atualize o mural da área de membros</p>', unsafe_allow_html=True)
+    aviso = st.text_area("Mensagem", placeholder="Digite o aviso...", height=100, label_visibility="collapsed")
+    if st.button("PUBLICAR NO MURAL"):
         st.success("Mural atualizado!")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# COLUNA 3: NOTIFICAR
-with col_3:
-    st.markdown('<div class="card-master-fix">', unsafe_allow_html=True)
-    st.markdown('<div class="card-header"><div class="card-title-kerigma">🔔 Notificar Membro</div><div class="card-desc-kerigma">Envie um alerta direto para o dispositivo</div></div>', unsafe_allow_html=True)
-    
-    assunto = st.text_input("Assunto do Alerta", placeholder="Ex: Urgente...")
-    msg_alerta = st.text_input("Mensagem Curta", placeholder="Ex: Reunião às 19h")
-    
-    if st.button("ENVIAR NOTIFICAÇÃO", key="btn_notif"):
+with col3:
+    st.markdown('<div class="card-master-final">', unsafe_allow_html=True)
+    st.markdown('<p class="title-red">🔔 Notificar Membro</p>', unsafe_allow_html=True)
+    st.markdown('<p class="desc-gray">Envie um alerta para o dispositivo</p>', unsafe_allow_html=True)
+    st.text_input("Assunto", placeholder="Assunto...", label_visibility="collapsed")
+    st.text_input("Mensagem", placeholder="Mensagem curta...", label_visibility="collapsed")
+    if st.button("ENVIAR NOTIFICAÇÃO"):
         st.warning("Alerta disparado!")
     st.markdown('</div>', unsafe_allow_html=True)
