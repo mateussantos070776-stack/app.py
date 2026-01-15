@@ -1,36 +1,36 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO E DESIGN
+# 1. CONFIGURAÇÃO E DESIGN (ESTILO PRIVALIA)
 st.set_page_config(page_title="Viva o Propósito", layout="wide", initial_sidebar_state="collapsed")
 
-# Inicialização de Estados
+# Inicialização de Estados (O "Cérebro" do Site)
 if 'view' not in st.session_state: st.session_state.view = "home"
-if 'usuarios_cadastrados' not in st.session_state: st.session_state.usuarios_cadastrados = []
+if 'admin_logado' not in st.session_state: st.session_state.admin_logado = False
+if 'usuarios' not in st.session_state: st.session_state.usuarios = []
 if 'pastas' not in st.session_state:
     st.session_state.pastas = {
-        "Jeremias 29": {"texto": "Planos de paz.", "img": "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400"},
+        "Jeremias 29": {"texto": "Planos de paz e futuro.", "img": "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400"},
         "Salmos 23": {"texto": "O Senhor é meu pastor.", "img": "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?w=400"}
     }
 if 'ordem' not in st.session_state: st.session_state.ordem = list(st.session_state.pastas.keys())
 
-# CSS para Menu Superior
+# CSS para Menu Superior e Estilo
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    .nav-bar { display: flex; justify-content: center; background: white; padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
-    .nav-item { margin: 0 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+    .nav-bar { display: flex; justify-content: center; background: white; padding: 15px; border-bottom: 2px solid #eee; margin-bottom: 30px; }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. MENU SUPERIOR E BOTÃO CADEADO
+# 2. BARRA DE NAVEGAÇÃO SUPERIOR
 col_cad, col_menu, col_vazio = st.columns([1, 4, 1])
 with col_cad:
+    # O CADEADO AGORA LEVA DIRETO PARA O LOGIN OU PARA A AREA ADMIN SE JÁ LOGADO
     if st.button("🔒 ACESSO"):
-        st.session_state.view = "login_admin"
+        st.session_state.view = "admin_area" if st.session_state.admin_logado else "login_admin"
         st.rerun()
 
 with col_menu:
-    # Simulando abas clicáveis com botões lado a lado
     c1, c2, c3 = st.columns(3)
     if c1.button("🏠 INÍCIO"): st.session_state.view = "home"; st.rerun()
     if c2.button("📝 CADASTROS"): st.session_state.view = "tela_cadastro"; st.rerun()
@@ -38,58 +38,73 @@ with col_menu:
 
 st.write("---")
 
-# 3. LÓGICA DE NAVEGAÇÃO
+# 3. LÓGICA DE TELAS (NAVEGAÇÃO COM SETA VOLTAR)
 
-# TELA DE CADASTRO (PARA O PÚBLICO)
+# TELA DE CADASTRO PÚBLICO
 if st.session_state.view == "tela_cadastro":
     if st.button("⬅️ VOLTAR"): st.session_state.view = "home"; st.rerun()
     st.title("📝 Cadastro de Novos Membros")
-    with st.form("novo_user"):
-        nome_novo = st.text_input("Nome Completo")
-        senha_nova = st.text_input("Crie uma Senha", type="password")
-        if st.form_submit_button("Finalizar Cadastro"):
-            st.session_state.usuarios_cadastrados.append({"nome": nome_novo, "senha": senha_nova})
-            st.success(f"Bem-vindo, {nome_novo}! Cadastro realizado.")
+    with st.container(border=True):
+        nome = st.text_input("Nome Completo")
+        senha_c = st.text_input("Crie uma Senha", type="password")
+        if st.button("Finalizar Cadastro"):
+            if nome and senha_c:
+                st.session_state.usuarios.append({"nome": nome, "senha": senha_c})
+                st.success(f"Glória a Deus! {nome} cadastrado.")
+            else: st.error("Preencha tudo!")
 
-# TELA LOGIN ADMIN
+# TELA DE LOGIN ADMIN (RESOLUÇÃO DO ERRO DO BOTÃO)
 elif st.session_state.view == "login_admin":
     if st.button("⬅️ VOLTAR"): st.session_state.view = "home"; st.rerun()
-    st.subheader("🔑 Login do Administrador")
-    u = st.text_input("Usuário Admin")
-    s = st.text_input("Senha Admin", type="password")
-    if st.button("Entrar"):
-        if u == "admin" and s == "1234":
-            st.session_state.view = "admin_area"
-            st.rerun()
+    st.subheader("🔑 Autenticação do Administrador")
+    
+    # Usamos um formulário para garantir que o botão 'Entrar' funcione no primeiro clique
+    with st.form("form_login"):
+        u_admin = st.text_input("Usuário")
+        s_admin = st.text_input("Senha", type="password")
+        botao_entrar = st.form_submit_button("Entrar na Área Admin")
+        
+        if botao_entrar:
+            if u_admin == "admin" and s_admin == "1234":
+                st.session_state.admin_logado = True
+                st.session_state.view = "admin_area"
+                st.rerun()
+            else:
+                st.error("Usuário ou Senha incorretos.")
 
-# ÁREA ADMIN (ONDE APARECEM OS USUÁRIOS)
+# ÁREA ADMIN (ONDE ESTÁ A PASTA USUÁRIOS)
 elif st.session_state.view == "admin_area":
-    if st.button("⬅️ VOLTAR PARA O SITE"): st.session_state.view = "home"; st.rerun()
-    st.title("🛡️ Painel de Controle")
+    if not st.session_state.admin_logado: 
+        st.session_state.view = "login_admin"; st.rerun()
+        
+    if st.button("⬅️ SAIR DO PAINEL"): 
+        st.session_state.admin_logado = False
+        st.session_state.view = "home"; st.rerun()
+        
+    st.title("🛡️ Painel Administrativo")
+    aba_ordem, aba_users = st.tabs(["🔄 Reordenar Vitrine", "👥 Pasta: Usuários"])
     
-    aba_reordenar, aba_usuarios = st.tabs(["🔄 Reordenar Pastas", "👥 Usuários Cadastrados"])
-    
-    with aba_reordenar:
-        nova_ordem = st.multiselect("Ordem da Vitrine:", options=list(st.session_state.pastas.keys()), default=st.session_state.ordem)
-        if st.button("Salvar Ordem"):
+    with aba_ordem:
+        nova_ordem = st.multiselect("Arraste para mudar a ordem:", options=list(st.session_state.pastas.keys()), default=st.session_state.ordem)
+        if st.button("Salvar Nova Ordem"):
             st.session_state.ordem = nova_ordem
-            st.success("Ordem salva!")
-            
-    with aba_usuarios:
-        st.subheader("Lista de Pessoas Cadastradas")
-        if st.session_state.usuarios_cadastrados:
-            for user in st.session_state.usuarios_cadastrados:
-                st.write(f"👤 **Nome:** {user['nome']}")
+            st.success("Ordem atualizada na vitrine!")
+
+    with aba_users:
+        st.subheader("Membros Cadastrados")
+        if st.session_state.usuarios:
+            for i, u in enumerate(st.session_state.usuarios):
+                st.write(f"{i+1}. 👤 **{u['nome']}**")
         else:
             st.info("Nenhum usuário cadastrado ainda.")
 
-# HOME (VITRINE)
-elif st.session_state.view == "home":
-    st.title("✨ Vitrine de Propósito")
+# HOME / VITRINE
+else:
+    st.title("✨ Vitrine Viva o Propósito")
     cols = st.columns(len(st.session_state.ordem))
     for i, nome in enumerate(st.session_state.ordem):
         with cols[i]:
             st.image(st.session_state.pastas[nome]["img"])
             st.subheader(nome)
-            if st.button(f"Ver {nome}", key=nome):
+            if st.button(f"Abrir {nome}", key=nome):
                 st.info(st.session_state.pastas[nome]["texto"])
