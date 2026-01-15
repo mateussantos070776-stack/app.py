@@ -3,7 +3,7 @@ import os
 import random
 import re
 
-# 1. CONFIGURAÇÃO DE TELA (Nativa para garantir que a barra lateral esteja aberta)
+# 1. CONFIGURAÇÃO DE TELA (Reset de layout)
 st.set_page_config(
     page_title="KERIGMA | Sistema", 
     layout="wide", 
@@ -33,24 +33,26 @@ def validar_telefone(tel):
     padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
     return re.match(padrao, tel)
 
-# 2. CSS PARA FIXAR BARRA E TIRAR A SETA (Sem quebrar o layout)
+# 2. CSS DE RESTAURAÇÃO (Força a Sidebar a aparecer e remove a seta)
 st.markdown("""
     <style>
-    /* 1. Remove a seta de fechar e o cabeçalho branco superior */
-    [data-testid="stHeader"], 
-    [data-testid="sidebar-button"],
-    button[title="Collapse sidebar"] {
-        display: none !important;
-    }
-    
-    /* 2. Força a barra lateral a aparecer com a borda vermelha */
+    /* GARANTE QUE A SIDEBAR ESTEJA VISÍVEL */
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
+        min-width: 260px !important;
         visibility: visible !important;
+        display: block !important;
     }
 
-    /* 3. Estilo Geral */
+    /* ESCONDE APENAS A SETA E O CABEÇALHO */
+    [data-testid="stHeader"], 
+    button[title="Collapse sidebar"], 
+    [data-testid="sidebar-button"] {
+        display: none !important;
+    }
+
+    /* ESTILO GERAL */
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
     .stTextInput input, .stTextArea textarea { 
@@ -69,7 +71,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVEGAÇÃO LATERAL (Aparecerá fixa)
+# 3. NAVEGAÇÃO LATERAL (O coração do sistema)
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -90,7 +92,7 @@ elif st.session_state.tela == "login_membro":
         chave = st.text_input("Chave de Acesso", type="password")
         if st.button("ENTRAR"):
             if not nome or len(nome.split()) < 2: st.error("Insira o nome completo.")
-            elif not validar_telefone(telefone): st.error("Telefone inválido (DDD + 9).")
+            elif not validar_telefone(telefone): st.error("Telefone inválido.")
             elif chave in listar_chaves() or chave == "55420":
                 st.session_state.tela = "painel_membro"; st.rerun()
 
