@@ -1,174 +1,129 @@
 import streamlit as st
 
-# 1. ORQUESTRAÇÃO DA PÁGINA
+# 1. CONFIGURAÇÃO DA PÁGINA
 st.set_page_config(
-    page_title="KERIGMA MAANAIM | Hub de Mídia",
-    page_icon="🎬",
+    page_title="KERIGMA MAANAIM | Área Restrita",
+    page_icon="🔐",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded" # Inicia com a barra lateral visível para o login
 )
 
-# 2. CSS DE ALTA PERFORMANCE (UI/UX PREMIUM)
+# 2. CSS PARA ESTILO IMPECÁVEL E BOTÃO LATERAL
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap');
 
-    /* Background com textura de profundidade */
     .stApp {
-        background: radial-gradient(circle at 50% -20%, #1e1e1e 0%, #050505 100%);
+        background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #000000 100%);
         color: #f5f5f5;
         font-family: 'Montserrat', sans-serif;
     }
 
-    /* Esconder elementos nativos */
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-
-    /* Logo Centralizada Animada */
-    .logo-container {
-        display: flex;
-        justify-content: center;
-        padding: 40px 0 10px 0;
+    /* Estilização da Sidebar (Barra Lateral) */
+    [data-testid="stSidebar"] {
+        background-color: rgba(15, 15, 15, 0.95);
+        border-right: 1px solid rgba(229, 9, 20, 0.2);
+        min-width: 350px !important;
     }
-    
+
+    /* Título na Sidebar */
+    .sidebar-title {
+        color: #E50914;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    /* Título Principal Central */
     .main-title {
-        font-family: 'Montserrat', sans-serif;
         font-weight: 900;
-        font-size: 3.5rem;
-        letter-spacing: -3px;
+        font-size: 4rem;
         color: #E50914;
         text-transform: uppercase;
         text-align: center;
-        margin-bottom: 5px;
+        margin-top: 100px;
         background: linear-gradient(180deg, #ff1e1e 0%, #a80000 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.3));
+        filter: drop-shadow(0 0 15px rgba(229, 9, 20, 0.3));
     }
 
-    .tagline {
-        font-size: 0.9rem;
-        color: #888;
-        text-align: center;
-        letter-spacing: 5px;
-        text-transform: uppercase;
-        margin-bottom: 50px;
-        font-weight: 300;
-    }
-
-    /* Card de Login Estilo Neumorphism Dark */
-    .login-card {
-        background: rgba(20, 20, 20, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        padding: 60px;
-        box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-        backdrop-filter: blur(20px);
-    }
-
-    /* Inputs Estilizados */
-    .stTextInput input {
-        background-color: #1a1a1a !important;
-        border: 1px solid #333 !important;
-        color: white !important;
-        border-radius: 10px !important;
-        height: 55px !important;
-        padding-left: 20px !important;
-        font-size: 16px !important;
-    }
-    
-    .stTextInput input:focus {
-        border-color: #E50914 !important;
-        box-shadow: 0 0 15px rgba(229, 9, 20, 0.3) !important;
-    }
-
-    /* Botão de Ação Massivo */
+    /* Botão de Validação */
     div.stButton > button {
         background: #E50914 !important;
-        border: none !important;
-        padding: 15px 0 !important;
-        font-size: 1.1rem !important;
+        color: white !important;
         font-weight: 700 !important;
-        border-radius: 10px !important;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        width: 100% !important;
-        height: 60px !important;
+        border-radius: 5px !important;
+        width: 100%;
+        height: 45px;
+        transition: 0.3s;
     }
-
+    
     div.stButton > button:hover {
         background: #ff1e2d !important;
-        transform: scale(1.02);
-        box-shadow: 0 15px 30px rgba(229, 9, 20, 0.4) !important;
-    }
-
-    /* Rodapé discreto */
-    .footer-note {
-        text-align: center;
-        color: #444;
-        font-size: 0.75rem;
-        margin-top: 30px;
+        box-shadow: 0 0 20px rgba(229, 9, 20, 0.4) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. LOGICA E CONTEÚDO
-if 'auth' not in st.session_state:
-    st.session_state.auth = False
+# 3. LÓGICA DE ESTADO E CHAVE DE ACESSO
+CHAVE_MESTRA = "1234567890" # Defina aqui a sua chave de 10 dígitos
 
-# Link da imagem que você forneceu
-IMAGE_URL = "https://lh3.googleusercontent.com/d/1B8LjYZmHsjpyZPC96FaYAODskWrwOVJC"
+if 'membro_logado' not in st.session_state:
+    st.session_state.membro_logado = False
 
-if not st.session_state.auth:
-    # --- HEADER ---
-    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.markdown('<h1 class="main-title">KERIGMA MAANAIM</h1>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<p class="tagline">The Digital Media Experience</p>', unsafe_allow_html=True)
+# 4. BARRA LATERAL (ACESSAR CREDENCIAL)
+with st.sidebar:
+    st.markdown('<p class="sidebar-title">🔐 Acesso Integrante</p>', unsafe_allow_html=True)
+    st.image("https://lh3.googleusercontent.com/d/1B8LjYZmHsjpyZPC96FaYAODskWrwOVJC", use_container_width=True)
+    
+    with st.expander("Digitar Chave de Acesso"):
+        chave_input = st.text_input("Insira os 10 dígitos", type="password", help="Chave exclusiva para equipe de mídia.")
+        
+        if st.button("Validar Credencial"):
+            if chave_input == CHAVE_MESTRA:
+                st.session_state.membro_logado = True
+                st.success("Acesso Autorizado!")
+                st.rerun()
+            else:
+                st.error("Chave inválida.")
 
-    # --- LAYOUT CENTRALIZADO ---
-    col_left, col_center, col_right = st.columns([1, 1.8, 1])
+    if st.session_state.membro_logado:
+        st.write("---")
+        st.info("Você está no modo: **EDITORA DE MÍDIA**")
+        if st.button("Sair do Sistema"):
+            st.session_state.membro_logado = False
+            st.rerun()
 
-    with col_center:
-        # Imagem Proporcional
-        st.image(IMAGE_URL, use_container_width=True)
-        st.write("##")
-
-        # Container de Login
-        with st.container():
-            st.markdown('<div class="login-card">', unsafe_allow_html=True)
-            
-            st.markdown("<h2 style='text-align:center; font-size:1.5rem; margin-bottom:30px;'>Acessar Conteúdo Privado</h2>", unsafe_allow_html=True)
-            
-            user = st.text_input("Identificação", placeholder="E-mail ou Usuário")
-            password = st.text_input("Chave de Acesso", type="password", placeholder="Sua senha")
-            
-            st.write("##")
-            if st.button("INICIAR EXPERIÊNCIA"):
-                if user == "admin" and password == "1234":
-                    st.session_state.auth = True
-                    st.rerun()
-                else:
-                    st.error("Acesso negado. Credenciais não reconhecidas.")
-            
-            st.markdown('</div>', unsafe_allow_html=True)
-            st.markdown('<p class="footer-note">© 2026 MÍDIA KERIGMA. TODOS OS DIREITOS RESERVADOS.</p>', unsafe_allow_html=True)
+# 5. CONTEÚDO PRINCIPAL
+if not st.session_state.membro_logado:
+    # Tela de espera/pública
+    st.markdown('<h1 class="main-title">KERIGMA<br>MAANAIM</h1>', unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; letter-spacing:8px; color:#666;'>DIGITAL MEDIA HUB</p>", unsafe_allow_html=True)
+    
+    st.write("##")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.warning("⚠️ Utilize a barra lateral à esquerda para acessar com sua chave de 10 dígitos.")
 
 else:
-    # --- INTERFACE PÓS-LOGIN (ESTILO STREAMING) ---
-    st.markdown('<h2 style="color:#E50914; font-weight:900;">MÍDIA KERIGMA</h2>', unsafe_allow_html=True)
-    
-    # Barra de categorias
+    # TELA EXCLUSIVA PARA QUEM TEM A CHAVE
+    st.markdown('<h1 style="color:#E50914;">PAINEL DE MÍDIA KERIGMA</h1>', unsafe_allow_html=True)
     st.write("---")
-    st.markdown("### 🍿 Continue Assistindo")
     
-    # Grid de Vídeos/Estudos
-    cols = st.columns(4)
-    titles = ["O Kerigma", "Maanaim: O Lugar", "A Palavra Viva", "Poder e Unção"]
-    for i, col in enumerate(cols):
-        with col:
-            st.image(f"https://picsum.photos/400/225?random={i}", use_container_width=True)
-            st.markdown(f"**{titles[i]}**")
-            st.button(f"Assistir Agora", key=f"btn_{i}")
-
-    if st.sidebar.button("Sair da Conta"):
-        st.session_state.auth = False
-        st.rerun()
+    # Exemplo de Dashboard Profissional
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Vídeos Ativos", "42")
+    c2.metric("Uploads Pendentes", "5")
+    c3.metric("Espaço em Nuvem", "85%")
+    
+    st.write("### 🎬 Gerenciamento de Conteúdo")
+    st.file_uploader("Enviar novo arquivo de vídeo (MP4, MKV)")
+    
+    st.table({
+        "Arquivo": ["Culto_Domingo.mp4", "Estudo_Jeremias.mp4", "Intro_Maanaim.mov"],
+        "Status": ["Processado", "Em edição", "Aguardando"],
+        "Data": ["10/01", "12/01", "14/01"]
+    })
