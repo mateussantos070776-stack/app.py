@@ -132,16 +132,19 @@ with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
-    # Única opção disponível na barra lateral
     if st.button("🔴 ÁREA DE MEMBROS"):
         st.session_state.tela = "login_membro"
+        st.rerun()
+
+    if st.button("⚙️ ACESSO ADMIN"):
+        st.session_state.tela = "login_admin"
         st.rerun()
 
     st.write("---")
 
 # 5. LÓGICA DE TELAS
 
-# TELA: HOME (ENTRADA PRINCIPAL)
+# TELA: HOME
 if st.session_state.tela == "home":
     st.markdown('<div style="height: 12vh;"></div>', unsafe_allow_html=True)
     st.markdown('<h1 class="main-title">Kerigma Maanaim</h1>', unsafe_allow_html=True)
@@ -152,7 +155,7 @@ if st.session_state.tela == "home":
         chave_membro = st.text_input("", placeholder="INSIRA SUA CHAVE SAGRADA", type="password")
         if st.button("ENTRAR NO MAANAIM"):
             ativas = listar_chaves(ARQUIVO_ATIVAS)
-            if chave_membro == "admin123":
+            if chave_membro == "55420": # Senha Admin também entra por aqui como master
                 st.session_state.tela = "master"
                 st.rerun()
             elif chave_membro in ativas:
@@ -162,7 +165,21 @@ if st.session_state.tela == "home":
             else:
                 st.error("Chave inválida.")
 
-# TELA: VALIDAÇÃO DE ACESSO PARA ÁREA DE MEMBROS (ESCALAS)
+# TELA: LOGIN ESPECÍFICO ADMIN
+elif st.session_state.tela == "login_admin":
+    st.markdown('<div style="height: 15vh;"></div>', unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#E50914;'>ACESSO RESTRITO LIDERANÇA</h2>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        senha_admin = st.text_input("Insira a Senha Administrativa", type="password")
+        if st.button("AUTENTICAR MASTER"):
+            if senha_admin == "55420":
+                st.session_state.tela = "master"
+                st.rerun()
+            else:
+                st.error("Senha Administrativa Incorreta.")
+
+# TELA: LOGIN ESPECÍFICO MEMBRO
 elif st.session_state.tela == "login_membro":
     st.markdown('<div style="height: 15vh;"></div>', unsafe_allow_html=True)
     st.markdown("<h2 style='text-align:center; color:#E50914;'>VALIDAÇÃO DE INTEGRANTE</h2>", unsafe_allow_html=True)
@@ -171,36 +188,26 @@ elif st.session_state.tela == "login_membro":
         chave_esc = st.text_input("Chave para Escalas & Presença", type="password")
         if st.button("ACESSAR ESCALAS"):
             ativas = listar_chaves(ARQUIVO_ATIVAS)
-            if chave_esc in ativas or chave_esc == "admin123":
+            if chave_esc in ativas or chave_esc == "55420":
                 st.session_state.membro_autenticado = True
                 st.session_state.tela = "escalas"
                 st.rerun()
             else:
-                st.error("Acesso negado. Chave incorreta.")
+                st.error("Acesso negado.")
 
 # TELA: ESCALAS & PRESENÇA
 elif st.session_state.tela == "escalas":
     if not st.session_state.membro_autenticado:
         st.session_state.tela = "login_membro"
         st.rerun()
-    
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ESCALAS & PRESENÇA</h1>", unsafe_allow_html=True)
-    
     col_e1, col_e2 = st.columns(2)
     with col_e1:
-        st.markdown('<div class="card-janela" style="height:auto; text-align:left;">', unsafe_allow_html=True)
-        st.subheader("📅 Escala da Semana")
-        st.write("**Culto de Celebração** (Domingo - 19:00)")
-        st.caption("Status: Necessário preencher vagas de técnica.")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-janela"><h3>📅 Escala</h3><p>Culto Domingo - 19:00</p></div>', unsafe_allow_html=True)
     with col_e2:
-        st.markdown('<div class="card-janela" style="height:auto;">', unsafe_allow_html=True)
-        st.subheader("🙋 Confirmar Disponibilidade")
-        nome = st.text_input("Nome Completo")
-        funcao = st.selectbox("Função", ["Câmera", "Live", "Social Media", "Foto"])
-        if st.button("ENVIAR DISPONIBILIDADE"):
-            st.success(f"Presença de {nome} registrada!")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-janela"><h3>🙋 Confirmar</h3></div>', unsafe_allow_html=True)
+        nome = st.text_input("Nome")
+        if st.button("ENVIAR"): st.success("Registrado!")
 
 # TELA: PAINEL MASTER (ADMIN)
 elif st.session_state.tela == "master":
@@ -218,12 +225,11 @@ elif st.session_state.tela == "master":
         chaves = listar_chaves(ARQUIVO_ATIVAS)
         for c in chaves: st.code(c)
 
-# TELA: EXCLUSIVO MÍDIA (DASHBOARD)
+# TELA: EXCLUSIVO MÍDIA
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
     titulos = ["📸 FOTOS", "🎥 VÍDEOS", "🎨 ARTES", "📝 ROTEIROS", "🎵 ÁUDIOS", "🗓️ AGENDA"]
     chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
-    
     for i in range(2):
         cols = st.columns(3)
         for j in range(3):
@@ -232,11 +238,3 @@ elif st.session_state.tela == "membro":
                 st.markdown(f'<div class="card-janela" style="height:220px;"><h3>{titulos[idx]}</h3></div>', unsafe_allow_html=True)
                 if st.button("ACESSAR", key=chaves_btn[idx]):
                     if titulos[idx] == "📸 FOTOS": st.session_state.sub_view = "fotos"
-
-    if st.session_state.get('sub_view') == "fotos":
-        st.write("---")
-        arquivos = os.listdir(PASTA_GALERIA)
-        if arquivos:
-            cols_img = st.columns(4)
-            for i, img in enumerate(arquivos):
-                with cols_img[i % 4]: st.image(os.path.join(PASTA_GALERIA, img))
