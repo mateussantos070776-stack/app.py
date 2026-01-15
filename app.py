@@ -1,9 +1,9 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO INICIAL
+# 1. CONFIGURAÇÃO DA PÁGINA
 st.set_page_config(page_title="Viva o Propósito", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. INICIALIZAÇÃO DE ESTADOS (SEGURANÇA)
+# 2. INICIALIZAÇÃO DE ESTADOS (O 'CÉREBRO' DO SITE)
 if 'admin_ativo' not in st.session_state:
     st.session_state.admin_ativo = False
 if 'view' not in st.session_state:
@@ -16,7 +16,7 @@ if 'pastas' not in st.session_state:
 if 'ordem' not in st.session_state:
     st.session_state.ordem = list(st.session_state.pastas.keys())
 
-# 3. ESTILO VISUAL (BARRA SUPERIOR)
+# 3. ESTILO VISUAL E BARRA SUPERIOR (ESTILO PRIVALIA)
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
@@ -25,62 +25,83 @@ st.markdown("""
         padding: 10px 40px; background: white; border-bottom: 1px solid #eee;
         position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     }
-    .main-content { margin-top: 80px; }
+    .main-content { margin-top: 100px; }
     </style>
-    <div class="top-bar">
-        <div style="font-size: 20px;">🔒 Portal Admin</div>
-        <div style="font-weight: bold; letter-spacing: 2px;">VIVA O PROPÓSITO</div>
-        <div></div>
-    </div>
-    <div class="main-content"></div>
     """, unsafe_allow_html=True)
 
-# 4. BARRA LATERAL (ONDE O CADEADO "ABRE" O LOGIN)
-# Para o cadeado ter ação, o Streamlit usa a barra lateral (sidebar) como o painel que desliza.
-with st.sidebar:
-    # BOTÃO VOLTAR (Sempre no topo da barra)
-    if st.button("⬅️ Voltar"):
+# CRIANDO A BARRA SUPERIOR COM O BOTÃO DE CADEADO REAL
+with st.container():
+    col_cad, col_tit, col_vazio = st.columns([1, 4, 1])
+    with col_cad:
+        # Este botão agora substitui o ícone parado e abre o painel lateral
+        if st.button("🔒 ACESSO"):
+            st.toast("Abrindo Painel de Login...")
+            # No Streamlit, botões podem disparar mudanças de estado
+            st.session_state.view = "login"
+    with col_tit:
+        st.markdown("<h2 style='text-align: center;'>VIVA O PROPÓSITO</h2>", unsafe_allow_html=True)
+
+st.markdown("<div class='main-content'></div>", unsafe_allow_html=True)
+
+# 4. LÓGICA DE NAVEGAÇÃO (AS JANELAS)
+
+# JANELA DE LOGIN (DISPARADA PELO CADEADO)
+if st.session_state.view == "login":
+    if st.button("⬅️ VOLTAR PARA O INÍCIO"):
         st.session_state.view = "home"
         st.rerun()
-        
-    st.title("🔐 Acesso Restrito")
-    if not st.session_state.admin_ativo:
-        usuario = st.text_input("Usuário")
-        senha = st.text_input("Senha", type="password")
-        if st.button("Entrar"):
-            if usuario == "admin" and senha == "suasenha": # Altere aqui
-                st.session_state.admin_ativo = True
-                st.success("Logado!")
-                st.rerun()
-    else:
-        st.write("✅ Você está no modo Editor")
-        st.subheader("Configurações")
-        nova_ordem = st.multiselect("Reordenar Vitrine:", options=list(st.session_state.pastas.keys()), default=st.session_state.ordem)
-        if st.button("Salvar Ordem"):
-            st.session_state.ordem = nova_ordem
+    
+    st.subheader("🔐 Área Administrativa")
+    usuario = st.text_input("Usuário")
+    senha = st.text_input("Senha", type="password")
+    if st.button("Confirmar Login"):
+        if usuario == "admin" and senha == "suasenha": # Altere sua senha aqui
+            st.session_state.admin_ativo = True
+            st.success("Logado com sucesso!")
+            st.session_state.view = "admin_panel"
             st.rerun()
-        if st.button("Logoff"):
-            st.session_state.admin_ativo = False
-            st.rerun()
+        else:
+            st.error("Dados inválidos.")
 
-# 5. CONTEÚDO PRINCIPAL
-if st.session_state.view == "home":
-    st.title("✨ Vitrine de Estudos")
-    cols = st.columns(len(st.session_state.ordem))
-    for i, nome in enumerate(st.session_state.ordem):
-        dados = st.session_state.pastas[nome]
-        with cols[i]:
-            st.image(dados['img'])
-            if st.button(f"Abrir {nome}", key=nome):
-                st.session_state.view = nome
-                st.rerun()
+# JANELA DE ADMINISTRAÇÃO (ONDE VOCÊ TROCA TUDO DE LUGAR)
+elif st.session_state.view == "admin_panel":
+    if st.button("⬅️ VOLTAR PARA O INÍCIO"):
+        st.session_state.view = "home"
+        st.rerun()
+    
+    st.title("🔄 Gerenciar Vitrine")
+    nova_ordem = st.multiselect("Defina a ordem das pregações:", 
+                                options=list(st.session_state.pastas.keys()), 
+                                default=st.session_state.ordem)
+    if st.button("Salvar Nova Ordem"):
+        st.session_state.ordem = nova_ordem
+        st.success("Ordem atualizada!")
+    
+    if st.button("Sair (Logout)"):
+        st.session_state.admin_ativo = False
+        st.session_state.view = "home"
+        st.rerun()
 
-else:
-    # TELA DE LEITURA (COM SETA VOLTAR)
-    if st.button("⬅️ Voltar para a Vitrine"):
+# JANELA DE LEITURA DE ESTUDO
+elif st.session_state.view in st.session_state.pastas:
+    if st.button("⬅️ VOLTAR PARA A VITRINE"):
         st.session_state.view = "home"
         st.rerun()
     
     nome_estudo = st.session_state.view
     st.header(nome_estudo)
+    st.image(st.session_state.pastas[nome_estudo]["img"], width=400)
     st.write(st.session_state.pastas[nome_estudo]["texto"])
+
+# VITRINE PRINCIPAL (HOME)
+else:
+    st.title("✨ Vitrine de Estudos")
+    cols = st.columns(3)
+    for i, nome in enumerate(st.session_state.ordem):
+        dados = st.session_state.pastas[nome]
+        with cols[i % 3]:
+            st.image(dados['img'], use_container_width=True)
+            st.subheader(nome)
+            if st.button(f"Ler: {nome}", key=f"btn_{nome}"):
+                st.session_state.view = nome
+                st.rerun()
