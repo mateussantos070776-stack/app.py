@@ -90,6 +90,8 @@ st.markdown("""
     }
 
     /* Botões na Barra Lateral */
+    [data-testid="stSidebarNav"] {display: none;} /* Esconde nav padrão */
+    
     [data-testid="stSidebar"] div.stButton > button {
         width: 100% !important;
         max-width: 250px !important;
@@ -127,7 +129,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 4. BARRA LATERAL (SIDEBAR)
+# 4. BARRA LATERAL (SIDEBAR DEFINIDA)
 with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -139,10 +141,12 @@ with st.sidebar:
         st.session_state.membro_autenticado = False
         st.rerun()
 
+    # Botão Área de Membros
     if st.button("🔴 ÁREA DE MEMBROS"):
         st.session_state.tela = "login_membro"
         st.rerun()
 
+    # Botão Acesso Admin
     if st.button("⚙️ ACESSO ADMIN"):
         st.session_state.tela = "login_admin"
         st.rerun()
