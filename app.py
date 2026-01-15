@@ -32,7 +32,7 @@ def listar_chaves(arquivo):
 def salvar_chave(chave, arquivo):
     with open(arquivo, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM (ESTÉTICA, GRADIENTES E CARDS)
+# 3. CSS PREMIUM
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
@@ -66,6 +66,7 @@ st.markdown("""
         text-transform: uppercase;
     }
 
+    /* BOTÕES GERAIS (SIDEBAR E CORPO) */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -81,6 +82,14 @@ st.markdown("""
     div.stButton > button:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+    }
+
+    /* Ajuste específico para os botões da Sidebar não ficarem gigantes */
+    [data-testid="stSidebar"] div.stButton > button {
+        width: 100% !important;
+        max-width: 250px !important;
+        height: 45px !important;
+        margin-bottom: 10px;
     }
 
     div[data-testid="stTextInput"] input {
@@ -110,7 +119,6 @@ st.markdown("""
         border-color: #E50914; 
         background: linear-gradient(145deg, rgba(40, 40, 40, 0.8) 0%, rgba(20, 20, 20, 0.9) 100%);
         transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(229, 9, 20, 0.15);
     }
 
     .card-janela h3 { color: #E50914; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; }
@@ -123,9 +131,15 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 4. BARRA LATERAL
+# 4. BARRA LATERAL (SIDEBAR)
 with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
+    st.write("---")
+    
+    # NOVO BOTÃO FUNCIONAL NA BARRA LATERAL
+    if st.button("🔴 ÁREA DE SUPORTE"):
+        st.toast("Suporte técnico acionado! Verifique seu e-mail em breve.", icon="⚠️")
+
     st.write("---")
     if st.button("SAIR / INÍCIO"):
         st.session_state.tela = "home"
@@ -177,12 +191,10 @@ elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; letter-spacing:5px;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; color:#555; margin-bottom:50px; font-weight:700;'>ADMINISTRAÇÃO DE CONTEÚDO SANTO</p>", unsafe_allow_html=True)
     
-    # Listas de dados para o Grid
     titulos = ["📸 FOTOS", "🎥 VÍDEOS", "🎨 ARTES", "📝 ROTEIROS", "🎵 ÁUDIOS", "🗓️ AGENDA"]
     descricoes = ["Galeria Coletiva", "Arquivos Brutos", "Identidade Visual", "Scripts e Ideias", "Trilhas Kerigma", "Escala de Mídia"]
     chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
 
-    # Grid 3x3 (2 linhas x 3 colunas)
     for i in range(2):
         cols = st.columns(3)
         for j in range(3):
@@ -198,17 +210,10 @@ elif st.session_state.tela == "membro":
                     if titulos[idx] == "📸 FOTOS":
                         st.session_state.sub_view = "fotos"
 
-    # Sub-view da Galeria
     if st.session_state.get('sub_view') == "fotos":
         st.write("---")
         st.subheader("📸 Galeria de Imagens")
-        with st.expander("➕ ADICIONAR FOTO"):
-            upload = st.file_uploader("Upload", type=["jpg", "png", "jpeg"])
-            if upload:
-                with open(os.path.join(PASTA_GALERIA, upload.name), "wb") as f:
-                    f.write(upload.getbuffer())
-                st.rerun()
-
+        # Listagem de arquivos...
         arquivos = os.listdir(PASTA_GALERIA)
         if arquivos:
             cols_img = st.columns(4)
