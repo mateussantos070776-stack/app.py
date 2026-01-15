@@ -1,117 +1,124 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO E DESIGN (ESTILO PRIVALIA)
-st.set_page_config(page_title="Viva o Propósito", layout="wide", initial_sidebar_state="collapsed")
+# 1. CONFIGURAÇÃO E DESIGN (ESTILO NETFLIX)
+st.set_page_config(page_title="Midia Kerigma Maanaim", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. INICIALIZAÇÃO DE ESTADOS
-if 'view' not in st.session_state: st.session_state.view = "home"
-if 'admin_logado' not in st.session_state: st.session_state.admin_logado = False
-if 'usuarios' not in st.session_state: st.session_state.usuarios = []
-if 'manutencao' not in st.session_state: st.session_state.manutencao = False # Estado do aviso
-if 'pastas' not in st.session_state:
-    st.session_state.pastas = {
-        "Jeremias 29": {"texto": "Planos de paz e futuro.", "img": "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400"},
-        "Salmos 23": {"texto": "O Senhor é meu pastor.", "img": "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?w=400"}
-    }
-if 'ordem' not in st.session_state: st.session_state.ordem = list(st.session_state.pastas.keys())
-
-# 3. CSS PARA ESMAECER E AVISO "ESTAMOS TRABALHANDO"
+# 2. CSS CUSTOMIZADO PARA ESTILO NETFLIX
 st.markdown("""
     <style>
+    /* Fundo preto e esconder elementos padrão */
+    .stApp {
+        background-color: #000000;
+        color: #FFFFFF;
+    }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .stApp { animation: fadeIn 0.8s ease-in-out; }
 
-    /* Estilo da mensagem grande de manutenção */
-    .banner-trabalho {
-        background-color: #FF4B4B;
-        color: white;
-        text-align: center;
-        padding: 20px;
-        font-size: 30px;
+    /* Título Estilo Netflix */
+    .netflix-logo {
+        color: #E50914;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 50px;
         font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+        letter-spacing: -2px;
+        text-transform: uppercase;
+    }
+
+    /* Card de Login */
+    .login-box {
+        background-color: rgba(0, 0, 0, 0.75);
+        padding: 60px;
         border-radius: 10px;
-        margin-bottom: 20px;
-        border: 2px solid white;
+        border: 1px solid #333;
+        max-width: 450px;
+        margin: auto;
+    }
+
+    /* Botão Vermelho Netflix */
+    div.stButton > button {
+        background-color: #E50914 !important;
+        color: white !important;
+        width: 100%;
+        border-radius: 4px;
+        border: none;
+        height: 50px;
+        font-size: 18px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    div.stButton > button:hover {
+        background-color: #B20710 !important;
+    }
+
+    /* Inputs estilizados */
+    .stTextInput input {
+        background-color: #333 !important;
+        color: white !important;
+        border-radius: 4px !important;
+        border: none !important;
+        height: 50px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 4. EXIBIÇÃO DO AVISO GLOBAL (Se ativado no Admin)
-if st.session_state.manutencao:
-    st.markdown('<div class="banner-trabalho">⚠️ ESTAMOS TRABALHANDO</div>', unsafe_allow_html=True)
+# 3. INICIALIZAÇÃO DE ESTADOS
+if 'logado' not in st.session_state: st.session_state.logado = False
+if 'view' not in st.session_state: st.session_state.view = "login"
 
-# 5. NAVEGAÇÃO SUPERIOR
-col_cad, col_ini, col_reg, col_est = st.columns([1, 1, 1, 1])
-if col_cad.button("🔒 ACESSO"):
-    st.session_state.view = "admin_area" if st.session_state.admin_logado else "login_admin"
-    st.rerun()
-if col_ini.button("🏠 INÍCIO"): st.session_state.view = "home"; st.rerun()
-if col_reg.button("📝 CADASTROS"): st.session_state.view = "tela_cadastro"; st.rerun()
-if col_est.button("📖 ESTUDOS"): st.session_state.view = "home"; st.rerun()
+# 4. LÓGICA DE TELAS
 
-st.write("---")
-
-# 6. LÓGICA DE TELAS
-
-# TELA DE CADASTRO
-if st.session_state.view == "tela_cadastro":
-    if st.button("⬅️ VOLTAR"): st.session_state.view = "home"; st.rerun()
-    st.title("📝 Cadastro de Membros")
-    with st.form("cad"):
-        n = st.text_input("Nome")
-        if st.form_submit_button("Cadastrar"):
-            st.session_state.usuarios.append({"nome": n})
-            st.success("Cadastrado!")
-
-# TELA DE LOGIN ADMIN (admin / 1234)
-elif st.session_state.view == "login_admin":
-    if st.button("⬅️ VOLTAR"): st.session_state.view = "home"; st.rerun()
-    st.subheader("🔑 Login do Administrador")
-    with st.form("login"):
-        u = st.text_input("Usuário")
-        s = st.text_input("Senha", type="password")
-        if st.form_submit_button("Entrar"):
-            if u == "admin" and s == "1234":
-                st.session_state.admin_logado = True
-                st.session_state.view = "admin_area"
-                st.rerun()
-            else: st.error("Incorreto.")
-
-# ÁREA ADMIN (NOVA OPÇÃO DE MANUTENÇÃO AQUI)
-elif st.session_state.view == "admin_area":
-    if st.button("⬅️ SAIR DO ADMIN"): 
-        st.session_state.admin_logado = False
-        st.session_state.view = "home"; st.rerun()
+# TELA DE LOGIN ESTILO NETFLIX
+if not st.session_state.logado:
+    st.markdown('<div class="netflix-logo">MIDIA KERIGMA MAANAIM</div>', unsafe_allow_html=True)
     
-    st.title("🛡️ Painel de Gestão")
-    t1, t2, t3 = st.tabs(["🔄 Ordem", "👥 Usuários", "🛠️ Avisos"])
+    # Criando colunas para centralizar o formulário
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    with t1:
-        nova = st.multiselect("Vitrine:", options=list(st.session_state.pastas.keys()), default=st.session_state.ordem)
-        if st.button("Salvar Ordem"): st.session_state.ordem = nova; st.success("Salvo!")
-            
-    with t2:
-        for user in st.session_state.usuarios: st.write(f"👤 {user['nome']}")
+    with col2:
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.subheader("Entrar")
         
-    with t3:
-        st.subheader("Controle de Avisos do Site")
-        # Chave para ligar/desligar a mensagem "ESTAMOS TRABALHANDO"
-        st.session_state.manutencao = st.toggle("Ativar aviso: ESTAMOS TRABALHANDO", value=st.session_state.manutencao)
-        if st.session_state.manutencao:
-            st.warning("O aviso está visível para todos os visitantes agora.")
-        else:
-            st.info("O site está em modo normal.")
+        email = st.text_input("Email ou número de telefone")
+        senha = st.text_input("Senha", type="password")
+        
+        if st.button("Entrar"):
+            # Lógica simples de acesso para teste
+            if email == "admin" and senha == "1234":
+                st.session_state.logado = True
+                st.session_state.view = "home"
+                st.rerun()
+            else:
+                st.error("Senha incorreta ou usuário não encontrado.")
+        
+        st.markdown("""
+            <p style='color: #737373; font-size: 14px; margin-top: 20px;'>
+            Novo por aqui? <b>Assine agora.</b><br>
+            Esta página é protegida pelo Google reCAPTCHA para garantir que você não é um robô.
+            </p>
+        """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# VITRINE HOME
+# TELA DE CONTEÚDO (APÓS LOGIN)
 else:
-    st.title("✨ Vitrine Viva o Propósito")
-    if len(st.session_state.ordem) > 0:
-        cols = st.columns(len(st.session_state.ordem))
-        for i, nome in enumerate(st.session_state.ordem):
-            with cols[i]:
-                st.image(st.session_state.pastas[nome]["img"])
-                st.subheader(nome)
-                if st.button(f"Abrir {nome}", key=nome):
-                    st.info(st.session_state.pastas[nome]["texto"])
+    st.markdown('<div style="color: #E50914; font-size: 30px; font-weight: bold;">MIDIA KERIGMA MAANAIM</div>', unsafe_allow_html=True)
+    
+    # Menu de navegação simples
+    menu = st.tabs(["Início", "Séries Bíblicas", "Estudos", "Minha Lista"])
+    
+    with menu[0]:
+        st.write("---")
+        st.subheader("Populares na Midia Kerigma")
+        
+        # Exemplo de vitrine estilo Netflix
+        col_img1, col_img2, col_img3 = st.columns(3)
+        with col_img1:
+            st.image("https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400", caption="Jeremias 29: Planos de Paz")
+        with col_img2:
+            st.image("https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?w=400", caption="Salmos 23: O Pastor")
+        with col_img3:
+            st.image("https://images.unsplash.com/photo-1438263301115-f01b87352e43?w=400", caption="O Kerigma: O Anúncio")
+
+    if st.sidebar.button("Sair"):
+        st.session_state.logado = False
+        st.rerun()
