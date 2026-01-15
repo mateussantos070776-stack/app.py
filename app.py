@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import random
 
-# 1. CONFIGURAÇÃO INICIAL
+# 1. CONFIGURAÇÃO INICIAL (BARRA LATERAL SEMPRE EXPANDIDA)
 st.set_page_config(
     page_title="KERIGMA | Exclusivo Mídia", 
     layout="wide",
@@ -15,11 +15,8 @@ if 'tela' not in st.session_state:
 if 'membro_autenticado' not in st.session_state:
     st.session_state.membro_autenticado = False
 
-PASTA_GALERIA = "galeria_kerigma"
 ARQUIVO_ATIVAS = "chaves_ativas.txt"
 
-if not os.path.exists(PASTA_GALERIA):
-    os.makedirs(PASTA_GALERIA)
 if not os.path.exists(ARQUIVO_ATIVAS):
     with open(ARQUIVO_ATIVAS, "w") as f: f.write("")
 
@@ -30,23 +27,20 @@ def listar_chaves():
 def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM (ESTILO DA SETA PERSONALIZADO)
+# 3. CSS PREMIUM (REMOVENDO A SETA E TRAVANDO A BARRA)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
     
-    /* REMOVE A LINHA DO TOPO */
+    /* ESCONDE O BOTÃO DE RECOLHER (A SETA) */
+    [data-testid="sidebar-button"] {
+        display: none !important;
+    }
+    
+    /* REMOVE O HEADER PARA LIMPEZA TOTAL */
     [data-testid="stHeader"] {
         background-color: rgba(0,0,0,0) !important;
         border-bottom: none !important;
-    }
-
-    /* CUSTOMIZAÇÃO DA SETA (SVG): FUNDO BRANCO REDONDO E SETA VERMELHA */
-    button[kind="headerNoContext"] svg {
-        fill: #E50914 !important; /* Cor da seta */
-        background-color: white !important; /* Fundo redondo */
-        border-radius: 50% !important;
-        padding: 2px !important;
     }
 
     /* Fundo do App */
@@ -55,7 +49,7 @@ st.markdown("""
     /* Títulos */
     .main-title { 
         font-family: 'Great Vibes', cursive; font-size: 5.5rem; color: #E50914; 
-        text-align: center; margin-top: 0vh;
+        text-align: center; margin-top: -2vh;
     }
     .sub-title {
         text-align: center; letter-spacing: 10px; color: #555; font-size: 0.8rem;
@@ -69,29 +63,33 @@ st.markdown("""
         width: 100% !important;
         border-radius: 8px !important;
         border: none !important;
-        height: 45px !important;
+        height: 48px !important;
         font-weight: bold !important;
+        margin-bottom: 10px;
     }
 
+    /* Barra Lateral Fixa */
     [data-testid="stSidebar"] { 
         background-color: #080808 !important; 
-        border-right: 1px solid rgba(229, 9, 20, 0.2) !important; 
+        border-right: 2px solid #E50914 !important;
+        min-width: 280px !important;
     }
 
     /* Estilo dos Cards */
     .card-janela {
-        background: rgba(20, 20, 20, 0.8);
+        background: rgba(20, 20, 20, 0.9);
         border: 1px solid #E50914;
         border-radius: 15px;
-        padding: 20px;
+        padding: 25px;
         text-align: center;
+        box-shadow: 0 4px 20px rgba(229, 9, 20, 0.2);
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 4. BARRA LATERAL
+# 4. BARRA LATERAL (FIXA E SEM SETA)
 with st.sidebar:
-    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
     if st.button("🏠 HOME"):
@@ -107,10 +105,9 @@ with st.sidebar:
         st.rerun()
     
     st.write("---")
+    st.markdown("<p style='text-align:center; color:#333; font-size:10px;'>V 1.0 | MAANAIM DIGITAL</p>", unsafe_allow_html=True)
 
 # 5. LÓGICA DE TELAS
-
-# TELA HOME
 if st.session_state.tela == "home":
     st.markdown('<h1 class="main-title">Kerigma Maanaim</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">Digital Media Hub</p>', unsafe_allow_html=True)
@@ -125,7 +122,6 @@ if st.session_state.tela == "home":
                 st.session_state.tela = "membro"
                 st.rerun()
 
-# TELA LOGIN ADMIN
 elif st.session_state.tela == "login_admin":
     st.markdown("<h2 style='text-align:center; color:#E50914;'>RESTRITO: LIDERANÇA</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -136,7 +132,6 @@ elif st.session_state.tela == "login_admin":
                 st.session_state.tela = "master"
                 st.rerun()
 
-# TELA PAINEL MASTER
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>PAINEL MASTER</h1>", unsafe_allow_html=True)
     st.markdown('<div class="card-janela">', unsafe_allow_html=True)
@@ -145,10 +140,9 @@ elif st.session_state.tela == "master":
         salvar_chave(nova)
         st.success(f"Chave Gerada: {nova}")
     st.markdown('</div>', unsafe_allow_html=True)
-    st.write("### Chaves Disponíveis")
+    st.write("### Chaves Ativas")
     st.json(listar_chaves())
 
-# TELA LOGIN MEMBRO
 elif st.session_state.tela == "login_membro":
     st.markdown("<h2 style='text-align:center; color:#E50914;'>VALIDAÇÃO DE MEMBRO</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -159,6 +153,5 @@ elif st.session_state.tela == "login_membro":
                 st.session_state.tela = "membro"
                 st.rerun()
 
-# TELA MEMBRO
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>CONTEÚDO EXCLUSIVO</h1>", unsafe_allow_html=True)
