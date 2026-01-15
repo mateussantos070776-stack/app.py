@@ -3,10 +3,12 @@ import os
 import random
 from PIL import Image
 import io
+from datetime import datetime
 
 # 1. CONFIGURAÇÃO INICIAL E SESSION STATE
 st.set_page_config(page_title="KERIGMA | Exclusivo Mídia", layout="wide")
 
+# Inicialização para evitar NameError e gerenciar navegação
 if 'tela' not in st.session_state:
     st.session_state.tela = "home"
 if 'sub_view' not in st.session_state:
@@ -16,6 +18,7 @@ PASTA_GALERIA = "galeria_kerigma"
 ARQUIVO_ATIVAS = "chaves_ativas.txt"
 ARQUIVO_USADOS = "chaves_usadas.txt"
 
+# Garante que as pastas e arquivos existam
 if not os.path.exists(PASTA_GALERIA):
     os.makedirs(PASTA_GALERIA)
 
@@ -32,19 +35,21 @@ def listar_chaves(arquivo):
 def salvar_chave(chave, arquivo):
     with open(arquivo, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM
+# 3. CSS PREMIUM (ESTÉTICA, GRADIENTES E BOTÕES)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
     
     header {visibility: hidden !important;}
     
+    /* Fundo Gradiente Deep Black */
     .stApp { 
         background: radial-gradient(circle at center, #0f0f0f 0%, #050505 100%);
         color: white; 
         font-family: 'Montserrat', sans-serif; 
     }
     
+    /* Título Fonte Rabisco Elegante */
     .main-title { 
         font-family: 'Great Vibes', cursive; 
         font-weight: 400; 
@@ -66,7 +71,7 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* BOTÕES GERAIS */
+    /* Estilo dos Botões Vermelhos */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -84,14 +89,15 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
     }
 
-    /* Sidebar Buttons */
+    /* Botões na Barra Lateral */
     [data-testid="stSidebar"] div.stButton > button {
         width: 100% !important;
         max-width: 250px !important;
         height: 45px !important;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
+    /* Inputs Estilizados */
     div[data-testid="stTextInput"] input {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -100,6 +106,7 @@ st.markdown("""
         text-align: center;
     }
 
+    /* Cards de Conteúdo e Escala */
     .card-janela {
         background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
         border: 1px solid rgba(229, 9, 20, 0.1);
@@ -107,10 +114,6 @@ st.markdown("""
         padding: 30px;
         text-align: center;
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        height: 220px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         margin-bottom: 10px;
     }
@@ -118,7 +121,6 @@ st.markdown("""
     .card-janela:hover { 
         border-color: #E50914; 
         background: linear-gradient(145deg, rgba(40, 40, 40, 0.8) 0%, rgba(20, 20, 20, 0.9) 100%);
-        transform: translateY(-5px);
     }
 
     .card-janela h3 { color: #E50914; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; }
@@ -136,14 +138,11 @@ with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
-    # BOTÃO ÁREA DE MEMBROS
+    # BOTÃO ÁREA DE MEMBROS (Redireciona para Escalas)
     if st.button("🔴 ÁREA DE MEMBROS"):
-        if st.session_state.tela != "home":
-             st.session_state.tela = "membro"
-             st.session_state.sub_view = None
-             st.rerun()
-        else:
-             st.warning("Por favor, insira sua chave primeiro.")
+        st.session_state.tela = "escalas"
+        st.session_state.sub_view = None
+        st.rerun()
 
     st.write("---")
     if st.button("SAIR / INÍCIO"):
@@ -153,7 +152,7 @@ with st.sidebar:
 
 # 5. LÓGICA DE TELAS
 
-# TELA: HOME
+# TELA: HOME (ENTRADA)
 if st.session_state.tela == "home":
     st.markdown('<div style="height: 12vh;"></div>', unsafe_allow_html=True)
     st.markdown('<h1 class="main-title">Kerigma Maanaim</h1>', unsafe_allow_html=True)
@@ -172,26 +171,56 @@ if st.session_state.tela == "home":
                 st.session_state.tela = "membro"
                 st.rerun()
             else:
-                st.error("Chave não reconhecida.")
+                st.error("Chave inválida ou não reconhecida.")
 
-# TELA: PAINEL MASTER
+# TELA: ESCALAS (ACIONADA PELO NOVO BOTÃO LATERAL)
+elif st.session_state.tela == "escalas":
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ESCALAS & PRESENÇA</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#555; margin-bottom:40px;'>ORGANIZAÇÃO DO SERVIÇO NO MAANAIM</p>", unsafe_allow_html=True)
+    
+    col_e1, col_e2 = st.columns(2)
+    with col_e1:
+        st.markdown('<div class="card-janela" style="height:auto; text-align:left;">', unsafe_allow_html=True)
+        st.subheader("📅 Escala da Semana")
+        st.markdown("---")
+        st.write("**Culto de Celebração** (Domingo - 19:00)")
+        st.caption("Câmera 1: Disponível | Live: Disponível")
+        st.write("**Reunião de Oração** (Terça - 20:00)")
+        st.caption("Social Media: Disponível")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col_e2:
+        st.markdown('<div class="card-janela" style="height:auto;">', unsafe_allow_html=True)
+        st.subheader("🙋 Confirmar sua Presença")
+        nome_membro = st.text_input("Seu Nome Completo")
+        funcao_membro = st.selectbox("Sua Função", ["Câmera", "Corte/Live", "Social Media", "Fotografia", "Projeção"])
+        status_membro = st.radio("Disponibilidade", ["Confirmado ✅", "Dúvida ❓", "Não poderei ❌"])
+        
+        if st.button("ENVIAR PARA A LIDERANÇA"):
+            st.success(f"Disponibilidade de {nome_membro} enviada com sucesso!")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# TELA: PAINEL MASTER (ADMIN)
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL MASTER</h1>", unsafe_allow_html=True)
     st.write("---")
     col_adm1, col_adm2 = st.columns(2)
     with col_adm1:
         st.markdown('<div class="card-janela">', unsafe_allow_html=True)
-        if st.button("✨ GERAR NOVA CHAVE"):
+        if st.button("✨ GERAR NOVA CHAVE PARA INTEGRANTE"):
             nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
             salvar_chave(nova, ARQUIVO_ATIVAS)
-            st.success(f"CHAVE: {nova}")
+            st.success(f"CHAVE GERADA: {nova}")
         st.markdown('</div>', unsafe_allow_html=True)
     with col_adm2:
-        st.subheader("CHAVES ATIVAS")
+        st.subheader("CHAVES ATIVAS NO SISTEMA")
         chaves = listar_chaves(ARQUIVO_ATIVAS)
-        for c in chaves: st.code(c)
+        if chaves:
+            for c in chaves: st.code(c)
+        else:
+            st.info("Nenhuma chave ativa gerada.")
 
-# TELA: EXCLUSIVO MÍDIA (ÁREA DE MEMBROS)
+# TELA: EXCLUSIVO MÍDIA (DASHBOARD DE CONTEÚDO)
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; letter-spacing:5px;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; color:#555; margin-bottom:50px; font-weight:700;'>ADMINISTRAÇÃO DE CONTEÚDO SANTO</p>", unsafe_allow_html=True)
@@ -200,13 +229,14 @@ elif st.session_state.tela == "membro":
     descricoes = ["Galeria Coletiva", "Arquivos Brutos", "Identidade Visual", "Scripts e Ideias", "Trilhas Kerigma", "Escala de Mídia"]
     chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
 
+    # Grid 3x3
     for i in range(2):
         cols = st.columns(3)
         for j in range(3):
             idx = (i * 3) + j
             with cols[j]:
                 st.markdown(f"""
-                    <div class="card-janela">
+                    <div class="card-janela" style="height:220px;">
                         <h3>{titulos[idx]}</h3>
                         <p>{descricoes[idx]}</p>
                     </div>
@@ -215,11 +245,12 @@ elif st.session_state.tela == "membro":
                     if titulos[idx] == "📸 FOTOS":
                         st.session_state.sub_view = "fotos"
 
+    # Conteúdo Interno da Galeria de Fotos
     if st.session_state.get('sub_view') == "fotos":
         st.write("---")
-        st.subheader("📸 Galeria de Imagens")
-        with st.expander("➕ ADICIONAR FOTO"):
-            upload = st.file_uploader("Upload", type=["jpg", "png", "jpeg"])
+        st.subheader("📸 Galeria de Imagens do Reino")
+        with st.expander("➕ ADICIONAR NOVO ARQUIVO"):
+            upload = st.file_uploader("Selecione a Imagem", type=["jpg", "png", "jpeg"])
             if upload:
                 with open(os.path.join(PASTA_GALERIA, upload.name), "wb") as f:
                     f.write(upload.getbuffer())
