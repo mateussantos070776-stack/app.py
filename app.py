@@ -1,6 +1,8 @@
 import streamlit as st
 import os
 import random
+from PIL import Image
+import io
 
 # 1. CONFIGURAÇÃO DA PÁGINA
 st.set_page_config(page_title="KERIGMA | Master Portal", layout="wide")
@@ -30,9 +32,20 @@ st.markdown("""
     .main-title { font-weight: 900; font-size: 5rem; color: #E50914; text-align: center; margin-top: 10vh; letter-spacing: -2px; }
     div.stButton > button { background-color: #E50914 !important; color: white !important; font-weight: 700 !important; border-radius: 8px !important; border: none; height: 50px;}
     .master-card { background: rgba(229, 9, 20, 0.05); padding: 40px; border-radius: 15px; border: 1px solid #E50914; text-align: center; }
-    .key-list { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 5px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
+    .img-container { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; }
     </style>
     """, unsafe_allow_html=True)
+
+# Função para redimensionar imagem para download
+def preparar_download(imagem_pil, largura_alvo):
+    # Calcula a altura mantendo o aspect ratio
+    proporcao = largura_alvo / float(imagem_pil.size[0])
+    altura_alvo = int((float(imagem_pil.size[1]) * float(proporcao)))
+    img_redimensionada = imagem_pil.resize((largura_alvo, altura_alvo), Image.LANCZOS)
+    
+    buf = io.BytesIO()
+    img_redimensionada.save(buf, format="PNG")
+    return buf.getvalue()
 
 # 4. CONTROLE DE ESTADO
 if 'tela' not in st.session_state: st.session_state.tela = "home"
@@ -46,7 +59,7 @@ with st.sidebar:
     st.markdown("### 👑 MASTER ACCESS")
     senha_mestre = st.text_input("Senha Mestre", type="password")
     if st.button("ENTRAR COMO ADMIN"):
-        if senha_mestre == "1234":  # SENHA ATUALIZADA
+        if senha_mestre == "1234":
             st.session_state.tela = "master"
             st.rerun()
         else:
@@ -85,7 +98,6 @@ if st.session_state.tela == "home":
 # TELA MASTER (GERADOR)
 elif st.session_state.tela == "master":
     st.markdown('<h1 style="color:#E50914; text-align:center;">PAINEL MASTER GERAL</h1>', unsafe_allow_html=True)
-    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown('<div class="master-card">', unsafe_allow_html=True)
@@ -95,27 +107,58 @@ elif st.session_state.tela == "master":
             salvar_chave(nova, ARQUIVO_ATIVAS)
             st.success("Nova chave gerada!")
             st.code(nova, language="text")
-        
         st.write("---")
-        st.markdown("### Gestão de Chaves Ativas")
+        st.markdown("### Chaves Ativas")
         ativas = listar_chaves(ARQUIVO_ATIVAS)
-        
-        if not ativas:
-            st.info("Nenhuma chave disponível.")
-        else:
-            for c in ativas:
-                col_key, col_del = st.columns([3, 1])
-                col_key.code(c)
-                if col_del.button("Apagar", key=c):
-                    ativas.remove(c)
-                    with open(ARQUIVO_ATIVAS, "w") as f:
-                        for rest in ativas: f.write(rest + "\n")
-                    st.rerun()
+        for c in ativas:
+            c1, c2 = st.columns([3, 1])
+            c1.code(c)
+            if c2.button("Apagar", key=c):
+                novas = [x for x in ativas if x != c]
+                with open(ARQUIVO_ATIVAS, "w") as f:
+                    for r in novas: f.write(r + "\n")
+                st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-# TELA MEMBRO
+# TELA MEMBRO (UPLOAD E REDIMENSIONAMENTO)
 elif st.session_state.tela == "membro":
-    st.markdown('<h1 style="color:#E50914;">ÁREA DO INTEGRANTE</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color:#E50914;">ÁREA DE PRODUÇÃO</h1>', unsafe_allow_html=True)
     st.write("---")
-    st.success("Bem-vindo à área de produção.")
-    st.file_uploader("Enviar arquivos de mídia", type=["mp4", "mov", "png", "jpg"])
+    
+    st.subheader("📸 Processamento de Imagens")
+    arquivo_foto = st.file_uploader("Subir foto para mídia", type=["jpg", "png", "jpeg"])
+
+    if arquivo_foto:
+        img = Image.open(arquivo_foto)
+        
+        st.markdown('<div class="img-container">', unsafe_allow_html=True)
+        col_img, col_info = st.columns([1, 1])
+        
+        with col_img:
+            st.image(img, caption="Preview da Imagem", use_container_width=True)
+            
+        with col_info:
+            st.markdown("### Opções de Exportação")
+            st.write("Escolha a resolução para download:")
+            
+            # Botão Download 1080p
+            data_1080 = preparar_download(img, 1920)
+            st.download_button(
+                label="📥 Baixar em 1080p (Full HD)",
+                data=data_1080,
+                file_name=f"kerigma_1080p_{arquivo_foto.name}",
+                mime="image/png"
+            )
+            
+            st.write("") # Espaçador
+            
+            # Botão Download 720p
+            data_720 = preparar_download(img, 1280)
+            st.download_button(
+                label="📥 Baixar em 720p (HD)",
+                data=data_720,
+                file_name=f"kerigma_720p_{arquivo_foto.name}",
+                mime="image/png"
+            )
+            
+        st.markdown('</div>', unsafe_allow_html=True)
