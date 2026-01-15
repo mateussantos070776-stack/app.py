@@ -1,28 +1,46 @@
 import streamlit as st
 
-# Título da página baseado no seu PDF original
-st.set_page_config(page_title="Viva o Propósito", page_icon="🙏")
+# Configuração da Página
+st.set_page_config(page_title="Arquivo de Pregações", page_icon="📖")
 
-st.title("VIVA O PRÓPOSITO EM ORAÇÃO")
-st.subheader("Acesso ao conteúdo da pregação")
+st.title("📂 MINHAS PREGAÇÕES")
+st.write("---")
 
-# Sistema de Login (As credenciais do seu projeto)
-with st.form(key='login_form'):
-    usuario = st.text_input("Usuário")
-    senha = st.text_input("Senha", type="password")
-    botao_entrar = st.form_submit_button(label='ENTRAR')
+# 1. Menu de Pastas (Categorias)
+# Isso funciona como pastas organizadas para o público
+pasta_selecionada = st.sidebar.selectbox(
+    "Selecione a Pasta de Estudos:",
+    ["Jeremias 29 (Viva o Propósito)", "Personagens Bíblicos", "Promessas de Deus"]
+)
+
+# 2. Conteúdo da Pasta: Jeremias 29
+if pasta_selecionada == "Jeremias 29 (Viva o Propósito)":
+    st.header("📍 Série: Viva o Propósito")
     
-    if botao_entrar:
-        if usuario == "admin" and senha == "1234":
-            st.success("BUSCAR-ME-EIS E ME ACHAREIS!")
-            st.balloons()
-            st.write("---")
-            st.markdown("""
-            ### Resumo do Estudo - Jeremias 29
-            * **1. O Contexto**: O exílio de 70 anos e a promessa de retorno.
-            * **2. A Dor**: As lutas fazem parte do propósito (Jó, Elias e Jesus).
-            * **3. A Direção**: Orar e prosperar durante o processo.
-            * **4. A Libertação**: O decreto de Ciro e a mudança de sorte.
-            """)
-        else:
-            st.error("Acesso negado. Busque de todo o coração.")
+    with st.expander("Estudo 1: O Contexto do Exílio"):
+        st.write("Conteúdo sobre os 70 anos de cativeiro e a soberania de Deus.")
+        
+    with st.expander("Estudo 2: O Propósito na Dor"):
+        st.write("Reflexão sobre as dores de Jó, Elias e Jesus.")
+        
+    with st.expander("Estudo 3: O Que Fazer no Processo?"):
+        st.write("Instruções bíblicas: Edificar, plantar e orar pela paz.")
+
+# 3. Conteúdo da Pasta: Personagens Bíblicos
+elif pasta_selecionada == "Personagens Bíblicos":
+    st.header("👥 Estudos sobre Personagens")
+    
+    with st.expander("A Fé de Abraão"):
+        st.write("Como a obediência gera frutos permanentes.")
+        
+    with st.expander("A Coragem de Davi"):
+        st.write("Vencendo gigantes através da confiança em Deus.")
+
+# 4. Conteúdo da Pasta: Promessas de Deus
+elif pasta_selecionada == "Promessas de Deus":
+    st.header("✨ As Promessas Inabaláveis")
+    st.info("Buscar-me-eis e me achareis quando me buscardes de todo o vosso coração.")
+
+# Rodapé Público
+st.write("---")
+st.caption("Site atualizado via GitHub e Streamlit Cloud.")
