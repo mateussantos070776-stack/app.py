@@ -29,57 +29,50 @@ def listar_chaves():
 def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM (PAINEL MASTER E BOTÕES FIXOS)
+# 3. CSS PREMIUM
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap');
     
-    /* REMOVE HEADER E SETA */
     [data-testid="stHeader"], [data-testid="sidebar-button"] { display: none !important; }
     
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
-    /* ESTILO DOS BOTÕES (FIXANDO A COR VERMELHA) */
+    /* BOTÃO QUE NÃO MUDA DE COR */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 8px !important;
         font-weight: bold !important;
-        transition: none !important; /* Remove transição de cor */
+        height: 45px !important;
     }
     
-    div.stButton > button:hover, div.stButton > button:active, div.stButton > button:focus {
-        background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
-        color: white !important;
-        border: none !important;
+    div.stButton > button:hover {
         box-shadow: 0 0 15px rgba(229, 9, 20, 0.4) !important;
+        color: white !important;
     }
 
-    /* BARRA LATERAL */
+    /* BARRA LATERAL FIXA */
     [data-testid="stSidebar"] { 
         background-color: #080808 !important; 
         border-right: 2px solid #E50914 !important;
-        min-width: 280px !important;
     }
 
-    /* CARD DO PAINEL MASTER */
+    /* PAINEL MASTER */
     .master-card {
-        background: rgba(15, 15, 15, 0.9);
-        border: 2px solid #E50914;
-        border-radius: 20px;
-        padding: 40px;
-        text-align: center;
-        margin-top: 20px;
+        background: rgba(20, 20, 20, 1);
+        border: 1px solid #333;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
     }
 
-    .chave-display {
-        font-size: 2.5rem;
+    .label-chave {
         color: #E50914;
         font-weight: 900;
-        letter-spacing: 5px;
-        margin: 20px 0;
-        text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+        font-size: 1.2rem;
+        margin-bottom: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -97,29 +90,16 @@ with st.sidebar:
     if st.button("⚙️ ACESSO ADMIN", use_container_width=True):
         st.session_state.tela = "login_admin"
         st.rerun()
-    st.write("---")
 
 # 5. LÓGICA DE TELAS
-if st.session_state.tela == "home":
-    st.markdown('<h1 style="font-family:\'Great Vibes\'; font-size:5rem; color:#E50914; text-align:center;">Kerigma Maanaim</h1>', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        chave = st.text_input("", placeholder="CHAVE SAGRADA", type="password")
-        if st.button("ENTRAR", use_container_width=True):
-            if chave == "55420":
-                st.session_state.tela = "master"
-                st.rerun()
-            elif chave in listar_chaves():
-                st.session_state.tela = "membro"
-                st.rerun()
-
-elif st.session_state.tela == "master":
+if st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL MASTER</h1>", unsafe_allow_html=True)
     
-    col_a, col_b, col_c = st.columns([1, 4, 1])
+    col_a, col_b, col_c = st.columns([1, 3, 1])
+    
     with col_b:
         st.markdown('<div class="master-card">', unsafe_allow_html=True)
-        st.write("### GERADOR DE ACESSO")
+        st.markdown("<p style='text-align:center; font-weight:700;'>GERADOR DE ACESSOS</p>", unsafe_allow_html=True)
         
         if st.button("✨ GERAR NOVA CHAVE", use_container_width=True):
             nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
@@ -127,17 +107,22 @@ elif st.session_state.tela == "master":
             st.session_state.chave_gerada = nova
             
         if st.session_state.chave_gerada:
-            st.markdown(f'<div class="chave-display">{st.session_state.chave_gerada}</div>', unsafe_allow_html=True)
-            st.success("Chave registrada com sucesso no sistema!")
+            st.write("---")
+            st.markdown('<p class="label-chave">CHAVE GERADA:</p>', unsafe_allow_html=True)
+            # Mostra a chave com o botão de copiar nativo do st.code
+            st.code(st.session_state.chave_gerada, language="text")
+            st.caption("Clique no ícone à direita da chave para copiar")
             
         st.markdown('</div>', unsafe_allow_html=True)
         
-        st.write("---")
         st.write("### LISTA DE CHAVES ATIVAS")
         chaves = listar_chaves()
         if chaves:
+            # Lista compacta para visualização
             st.code("\n".join(chaves), language="text")
         else:
-            st.info("Nenhuma chave gerada ainda.")
+            st.info("Nenhuma chave no sistema.")
 
-# (As outras telas login_membro, membro, etc continuam seguindo a mesma lógica)
+elif st.session_state.tela == "home":
+    st.markdown('<h1 style="font-family:serif; font-size:4rem; color:#E50914; text-align:center;">Kerigma Maanaim</h1>', unsafe_allow_html=True)
+    # Restante da lógica da home...
