@@ -26,7 +26,7 @@ def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: 
         f.write(chave + "\n")
 
-# 2. CSS REVISADO
+# 2. CSS COMPLETO
 st.markdown("""
     <style>
     [data-testid="stHeader"], [data-testid="sidebar-button"] { display: none !important; }
@@ -59,9 +59,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL
+# 3. BARRA LATERAL (ALTERADA PARA "FERRAMENTAS")
 with st.sidebar:
-    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900; letter-spacing: 2px;'>FERRAMENTAS</h2>", unsafe_allow_html=True)
     st.write("---")
     if st.button("🏠 HOME", key="nav_h"): st.session_state.tela = "home"; st.rerun()
     if st.button("🔴 ÁREA DE MEMBROS", key="nav_m"): st.session_state.tela = "login_membro"; st.rerun()
@@ -69,10 +69,11 @@ with st.sidebar:
 
 # 4. LÓGICA DE TELAS
 
-# --- TELA HOME (ALTERADA CONFORME SOLICITADO) ---
+# --- TELA HOME ---
 if st.session_state.tela == "home":
     st.markdown('<h1 style="font-size:3.5rem; color:#E50914; text-align:center; margin-top:80px; font-weight:900;">SEJA BEM-VINDO A EQUIPE MIDIA...</h1>', unsafe_allow_html=True)
 
+# --- LOGIN MEMBRO ---
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; margin-top:50px;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
     _, col_login, _ = st.columns([1, 1, 1])
@@ -82,6 +83,7 @@ elif st.session_state.tela == "login_membro":
             if chave in listar_chaves() or chave == "55420":
                 st.session_state.tela = "painel_membro"; st.rerun()
 
+# --- PAINEL DE MEMBROS ---
 elif st.session_state.tela == "painel_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>CENTRAL DO MEMBRO</h1>", unsafe_allow_html=True)
     st.write("<br>", unsafe_allow_html=True)
@@ -93,6 +95,7 @@ elif st.session_state.tela == "painel_membro":
         m3.button("🛠️ EQUIPAMENTOS", key="btn_equip")
         m4.button("🗓️ DIAS", key="btn_dias")
 
+# --- LOGIN ADMIN ---
 elif st.session_state.tela == "login_admin":
     st.markdown("<h1 style='color:#E50914; text-align:center; margin-top:50px;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
     _, col_adm, _ = st.columns([1, 1, 1])
@@ -101,6 +104,7 @@ elif st.session_state.tela == "login_admin":
         if st.button("ACESSAR COMANDO"):
             if senha == "55420": st.session_state.tela = "master"; st.rerun()
 
+# --- TELA MASTER ---
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
     st.write("---")
