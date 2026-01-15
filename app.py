@@ -7,7 +7,6 @@ import io
 # 1. CONFIGURAÇÃO INICIAL E SESSION STATE
 st.set_page_config(page_title="KERIGMA | Exclusivo Mídia", layout="wide")
 
-# Inicialização para evitar NameError
 if 'tela' not in st.session_state:
     st.session_state.tela = "home"
 if 'sub_view' not in st.session_state:
@@ -17,7 +16,6 @@ PASTA_GALERIA = "galeria_kerigma"
 ARQUIVO_ATIVAS = "chaves_ativas.txt"
 ARQUIVO_USADOS = "chaves_usadas.txt"
 
-# Criação de pastas e arquivos base
 if not os.path.exists(PASTA_GALERIA):
     os.makedirs(PASTA_GALERIA)
 
@@ -34,98 +32,113 @@ def listar_chaves(arquivo):
 def salvar_chave(chave, arquivo):
     with open(arquivo, "a") as f: f.write(chave + "\n")
 
-def preparar_download(caminho_img, largura_alvo):
-    img = Image.open(caminho_img)
-    proporcao = largura_alvo / float(img.size[0])
-    altura_alvo = int((float(img.size[1]) * float(proporcao)))
-    img_redimensionada = img.resize((largura_alvo, altura_alvo), Image.LANCZOS)
-    buf = io.BytesIO()
-    img_redimensionada.save(buf, format="PNG")
-    return buf.getvalue()
-
-# 3. CSS PREMIUM (DESIGN CENTRALIZADO E FONTE ELEGANTE)
+# 3. CSS PREMIUM ATUALIZADO (FOCO EM ESTÉTICA E CORES)
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
     
     header {visibility: hidden !important;}
-    .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
-    /* Título com Rabisco Elegante */
+    /* Background com gradiente escuro profundo */
+    .stApp { 
+        background: radial-gradient(circle at center, #0f0f0f 0%, #050505 100%);
+        color: white; 
+        font-family: 'Montserrat', sans-serif; 
+    }
+    
+    /* Título Principal */
     .main-title { 
         font-family: 'Great Vibes', cursive; 
         font-weight: 400; 
-        font-size: 6rem; 
+        font-size: 6.5rem; 
         color: #E50914; 
         text-align: center; 
+        text-shadow: 2px 2px 15px rgba(229, 9, 20, 0.3);
         margin-top: 5vh;
         margin-bottom: -10px;
     }
 
-    /* Subtítulo Hub */
     .sub-title {
         text-align: center; 
-        letter-spacing: 12px; 
-        color: #444; 
-        font-weight: 700;
+        letter-spacing: 15px; 
+        color: #555; 
+        font-weight: 300;
         margin-bottom: 40px;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        text-transform: uppercase;
     }
 
-    /* Botão Vermelho Centralizado */
+    /* Botões (Mantendo funcionalidade, melhorando brilho) */
     div.stButton > button {
-        background-color: #E50914 !important;
+        background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
         font-weight: 700 !important;
-        border-radius: 8px !important;
+        border-radius: 12px !important;
         border: none !important;
-        height: 50px;
-        width: 100%;
-        max-width: 300px;
-        display: block;
-        margin: 0 auto;
-        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.2);
+        transition: all 0.4s ease;
     }
     
     div.stButton > button:hover {
-        background-color: #b20710 !important;
-        transform: scale(1.02);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
     }
 
-    /* Centralização de Inputs */
-    div[data-testid="stTextInput"] {
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    /* Janelas 3x3 do Exclusivo Mídia */
-    .card-janela {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid #333;
-        border-radius: 15px;
-        padding: 25px;
+    /* Input centralizado com estilo Glassmorphism */
+    div[data-testid="stTextInput"] input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 10px !important;
         text-align: center;
-        transition: 0.3s;
-        height: 200px;
+    }
+
+    /* NOVOS CARDS 3x3 (EXCLUSIVO MÍDIA) */
+    .card-janela {
+        background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
+        border: 1px solid rgba(229, 9, 20, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 220px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin-bottom: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
+    
     .card-janela:hover { 
         border-color: #E50914; 
-        background: rgba(229, 9, 20, 0.05); 
+        background: linear-gradient(145deg, rgba(40, 40, 40, 0.8) 0%, rgba(20, 20, 20, 0.9) 100%);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(229, 9, 20, 0.15);
     }
 
-    [data-testid="stSidebar"] { background-color: #0a0a0a !important; border-right: 1px solid #222 !important; }
+    .card-janela h3 {
+        color: #E50914;
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+    }
+
+    .card-janela p {
+        color: #aaa;
+        font-size: 0.9rem;
+        font-weight: 300;
+    }
+
+    [data-testid="stSidebar"] { 
+        background-color: #080808 !important; 
+        border-right: 1px solid rgba(229, 9, 20, 0.2) !important; 
+    }
     </style>
     """, unsafe_allow_html=True)
 
 # 4. BARRA LATERAL
 with st.sidebar:
-    st.markdown("<h2 style='text-align:center; color:#E50914;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
-    
     if st.button("SAIR / INÍCIO"):
         st.session_state.tela = "home"
         st.session_state.sub_view = None
@@ -135,85 +148,74 @@ with st.sidebar:
 
 # TELA: HOME
 if st.session_state.tela == "home":
-    st.markdown('<div style="height: 15vh;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height: 12vh;"></div>', unsafe_allow_html=True)
     st.markdown('<h1 class="main-title">Kerigma Maanaim</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">DIGITAL MEDIA HUB</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">Digital Media Hub</p>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        chave_membro = st.text_input("", placeholder="Chave de Integrante", type="password")
-        if st.button("ACESSAR EXCLUSIVO MÍDIA"):
+        chave_membro = st.text_input("", placeholder="INSIRA SUA CHAVE SAGRADA", type="password")
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("ENTRAR NO MAANAIM"):
             ativas = listar_chaves(ARQUIVO_ATIVAS)
-            if chave_membro in ativas:
-                # Opcional: remover chave após uso ou registrar
-                st.session_state.tela = "membro"
-                st.rerun()
-            elif chave_membro == "admin123": # Senha mestra temporária
+            if chave_membro == "admin123":
                 st.session_state.tela = "master"
                 st.rerun()
+            elif chave_membro in ativas:
+                st.session_state.tela = "membro"
+                st.rerun()
             else:
-                st.error("Chave inválida ou já utilizada.")
+                st.error("Chave não reconhecida no sistema.")
 
-# TELA: PAINEL MASTER (ADMIN)
+# TELA: PAINEL MASTER
 elif st.session_state.tela == "master":
-    st.markdown("<h2 style='color:#E50914;'>PAINEL MASTER</h2>", unsafe_allow_html=True)
-    if st.button("✨ GERAR NOVA CHAVE PARA MEMBRO"):
-        nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
-        salvar_chave(nova, ARQUIVO_ATIVAS)
-        st.success(f"Chave Gerada: {nova}")
-    
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL MASTER</h1>", unsafe_allow_html=True)
     st.write("---")
-    st.subheader("Chaves Disponíveis")
-    st.write(listar_chaves(ARQUIVO_ATIVAS))
-
-# TELA: EXCLUSIVO MÍDIA (MEMBRO)
-elif st.session_state.tela == "membro":
-    st.markdown("<h1 style='color:#E50914; text-align:center;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#666; margin-bottom:50px;'>SELECIONE A CATEGORIA DE CONTEÚDO</p>", unsafe_allow_html=True)
+    col_adm1, col_adm2 = st.columns(2)
+    with col_adm1:
+        st.markdown('<div class="card-janela">', unsafe_allow_html=True)
+        if st.button("✨ GERAR NOVA CHAVE"):
+            nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
+            salvar_chave(nova, ARQUIVO_ATIVAS)
+            st.success(f"CHAVE: {nova}")
+        st.markdown('</div>', unsafe_allow_html=True)
     
-    # Grid 3x3
-    row1_1, row1_2, row1_3 = st.columns(3)
-    with row1_1:
-        st.markdown('<div class="card-janela"><h3>📸 FOTOS</h3><p>Galeria Coletiva</p></div>', unsafe_allow_html=True)
-        if st.button("ABRIR", key="btn_fotos"): st.session_state.sub_view = "fotos"
-        
-    with row1_2:
-        st.markdown('<div class="card-janela"><h3>🎥 VÍDEOS</h3><p>Arquivos Brutos</p></div>', unsafe_allow_html=True)
-        st.button("ABRIR", key="btn_videos")
-        
-    with row1_3:
-        st.markdown('<div class="card-janela"><h3>🎨 ARTES</h3><p>Identidade Visual</p></div>', unsafe_allow_html=True)
-        st.button("ABRIR", key="btn_artes")
+    with col_adm2:
+        st.subheader("CHAVES ATIVAS")
+        chaves = listar_chaves(ARQUIVO_ATIVAS)
+        for c in chaves: st.code(c)
 
-    row2_1, row2_2, row2_3 = st.columns(3)
-    with row2_1:
-        st.markdown('<div class="card-janela"><h3>📝 ROTEIROS</h3><p>Scripts e Ideias</p></div>', unsafe_allow_html=True)
-        st.button("ABRIR", key="btn_roteiros")
+# TELA: EXCLUSIVO MÍDIA (ESTÉTICA MELHORADA)
+elif st.session_state.tela == "membro":
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; letter-spacing:5px;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#555; margin-bottom:50px; font-weight:700;'>ADMINISTRAÇÃO DE CONTEÚDO SANTO</p>", unsafe_allow_html=True)
+    
+    # Grid 3x3 com novos Cards
+    for i in range(2): # Duas linhas
+        cols = st.columns(3)
+        indices = [1, 2, 3] if i == 0 else [4, 5, 6]
+        titulos = ["📸 FOTOS", "🎥 VÍDEOS", "🎨 ARTES", "📝 ROTEIROS", "🎵 ÁUDIOS", "🗓️ AGENDA"]
+        descricoes = ["Galeria Coletiva", "Arquivos Brutos", "Identidade Visual", "Scripts e Ideias", "Trilhas Kerigma", "Escala de Mídia"]
+         chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
         
-    with row2_2:
-        st.markdown('<div class="card-janela"><h3>🎵 ÁUDIOS</h3><p>Trilhas Kerigma</p></div>', unsafe_allow_html=True)
-        st.button("ABRIR", key="btn_audios")
-        
-    with row2_3:
-        st.markdown('<div class="card-janela"><h3>🗓️ AGENDA</h3><p>Escala de Mídia</p></div>', unsafe_allow_html=True)
-        st.button("ABRIR", key="btn_agenda")
+        for j in range(3):
+            idx = (i * 3) + j
+            with cols[j]:
+                st.markdown(f"""
+                    <div class="card-janela">
+                        <h3>{titulos[idx]}</h3>
+                        <p>{descricoes[idx]}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                if st.button("ACESSAR", key=chaves_btn[idx]):
+                    if titulos[idx] == "📸 FOTOS": st.session_state.sub_view = "fotos"
 
-    # Área de Conteúdo da Galeria de Fotos
     if st.session_state.get('sub_view') == "fotos":
         st.write("---")
         st.subheader("📸 Galeria de Imagens")
-        
-        with st.expander("➕ ADICIONAR FOTO"):
-            upload = st.file_uploader("Upload", type=["jpg", "png", "jpeg"])
-            if upload:
-                with open(os.path.join(PASTA_GALERIA, upload.name), "wb") as f:
-                    f.write(upload.getbuffer())
-                st.rerun()
-
+        # Logica de fotos simplificada para a base
         arquivos = os.listdir(PASTA_GALERIA)
-        if arquivos:
-            cols_img = st.columns(4)
-            for i, img in enumerate(arquivos):
-                with cols_img[i % 4]:
-                    st.image(os.path.join(PASTA_GALERIA, img), use_container_width=True)
-                    st.caption(img)
+        cols_img = st.columns(4)
+        for i, img in enumerate(arquivos):
+            with cols_img[i % 4]:
+                st.image(os.path.join(PASTA_GALERIA, img), use_container_width=True)
