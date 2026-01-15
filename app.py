@@ -1,48 +1,72 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO DA PÁGINA (Define como a barra lateral se comporta)
-st.set_page_config(
-    page_title="Viva o Propósito", 
-    page_icon="🙏", 
-    layout="wide",
-    initial_sidebar_state="expanded"  # Pode ser "collapsed" para começar fechada
-)
+# 1. CONFIGURAÇÃO DE DESIGN (ESTILO VITRINE)
+st.set_page_config(page_title="Viva o Propósito", layout="wide")
 
-# 2. LIMPEZA VISUAL (CSS)
+# CSS para criar o menu superior e o estilo de marcas
 st.markdown("""
     <style>
+    /* Remove elementos padrão do Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    [data-testid="stHeader"] {display:none !important;}
+    
+    /* Estilo do Menu Superior (Estilo Privalia) */
+    .nav-bar {
+        background-color: white;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .nav-item {
+        display: inline-block;
+        margin: 0 15px;
+        font-weight: bold;
+        color: #000;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 14px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. COLUNA LATERAL REDUZÍVEL (Sidebar)
+# 2. MENU SUPERIOR
+st.markdown("""
+    <div class="nav-bar">
+        <span class="nav-item">Início</span>
+        <span class="nav-item">Estudos Bíblicos</span>
+        <span class="nav-item">Ministério</span>
+        <span class="nav-item">Contato</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+# 3. CONTEÚDO PRINCIPAL (VITRINE)
+st.title("✨ Coleções de Fé")
+st.write("Explore as pastas e mergulhe na palavra.")
+
+# Criando colunas como se fossem categorias de marcas
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.image("https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=500", caption="PASTA: JEREMIAS 29")
+    if st.button("Abrir Estudo", key="j29"):
+        st.info("Plano de Deus: Paz e Futuro.")
+
+with col2:
+    st.image("https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?w=500", caption="PASTA: SALMOS")
+    if st.button("Abrir Estudo", key="salmos"):
+        st.info("O Senhor é meu Pastor.")
+
+with col3:
+    st.image("https://images.unsplash.com/photo-1490730141103-6ca3d7d6cf4b?w=500", caption="PASTA: ATOS")
+    if st.button("Abrir Estudo", key="atos"):
+        st.info("O Poder do Espírito Santo.")
+
+# 4. LOGIN ADMIN DISCRETO (ESTILO 'ENTRAR' NO TOPO DIREITO)
 with st.sidebar:
-    st.title("🛡️ Painel Admin")
-    st.write("Clique na seta acima ( < ) para recolher esta barra.")
-    
-    # Sistema de Login dentro da barra
-    with st.expander("🔑 Login Admin"):
-        usuario = st.text_input("Usuário")
-        senha = st.text_input("Senha", type="password")
-        if st.button("Acessar"):
-            if usuario == "seu_usuario" and senha == "sua_senha":
-                st.session_state.logado = True
-                st.success("Acesso liberado!")
-            else:
-                st.error("Incorreto")
-
-    st.write("---")
-    st.caption("Versão 2.0 - 2026")
-
-# 4. CONTEÚDO PRINCIPAL (Fica centralizado quando a barra fecha)
-st.title("📖 Portal Viva o Propósito")
-st.info("No celular, a seta para abrir a barra lateral fica no canto superior esquerdo.")
-
-# Simulando as pastas de pregação na área principal para melhor uso no telefone
-aba1, aba2 = st.tabs(["Estudos", "Sobre"])
-with aba1:
-    st.subheader("Pasta: Jeremias 29")
-    st.write("Conteúdo da pregação aqui...")
+    st.title("🔒 Login Admin")
+    user = st.text_input("Usuário")
+    senha = st.text_input("Senha", type="password")
+    if st.button("Acessar Painel"):
+        st.success("Logado!")
