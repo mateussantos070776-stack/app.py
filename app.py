@@ -2,11 +2,11 @@ import streamlit as st
 import os
 import random
 
-# 1. CONFIGURAÇÃO INICIAL (FORÇANDO BARRA LATERAL VISÍVEL)
+# 1. CONFIGURAÇÃO INICIAL
 st.set_page_config(
     page_title="KERIGMA | Exclusivo Mídia", 
     layout="wide",
-    initial_sidebar_state="expanded"  # Força a barra a aparecer
+    initial_sidebar_state="expanded"
 )
 
 # Inicialização de estados
@@ -30,25 +30,35 @@ def listar_chaves():
 def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM CORRIGIDO
+# 3. CSS PREMIUM (BORDA BRANCA REMOVIDA)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
     
+    /* REMOVE A BARRA BRANCA DO TOPO (HEADER) */
+    header {visibility: hidden !important; height: 0px !important;}
+    [data-testid="stHeader"] {display: none !important;}
+    
+    /* AJUSTA O ESPAÇAMENTO PARA O CONTEÚDO SUBIR */
+    .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+    }
+
     /* Fundo do App */
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
     /* Títulos */
     .main-title { 
         font-family: 'Great Vibes', cursive; font-size: 5.5rem; color: #E50914; 
-        text-align: center; margin-top: 2vh;
+        text-align: center; margin-top: 0vh;
     }
     .sub-title {
         text-align: center; letter-spacing: 10px; color: #555; font-size: 0.8rem;
         text-transform: uppercase; margin-bottom: 30px;
     }
 
-    /* Botões da Sidebar - Vermelho Kerigma */
+    /* Botões da Sidebar */
     section[data-testid="stSidebar"] .stButton button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -57,6 +67,11 @@ st.markdown("""
         border: none !important;
         height: 45px !important;
         font-weight: bold !important;
+    }
+
+    [data-testid="stSidebar"] { 
+        background-color: #080808 !important; 
+        border-right: 1px solid rgba(229, 9, 20, 0.2) !important; 
     }
 
     /* Estilo dos Cards */
@@ -70,9 +85,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 4. BARRA LATERAL RESTAURADA
+# 4. BARRA LATERAL
 with st.sidebar:
-    st.markdown("<h1 style='color:#E50914; text-align:center;'>SISTEMA</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
     if st.button("🏠 HOME"):
@@ -93,6 +108,7 @@ with st.sidebar:
 
 # TELA HOME
 if st.session_state.tela == "home":
+    st.markdown('<div style="height: 5vh;"></div>', unsafe_allow_html=True)
     st.markdown('<h1 class="main-title">Kerigma Maanaim</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">Digital Media Hub</p>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -108,7 +124,7 @@ if st.session_state.tela == "home":
 
 # TELA LOGIN ADMIN
 elif st.session_state.tela == "login_admin":
-    st.markdown("<h2 style='text-align:center;'>RESTRITO: LIDERANÇA</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#E50914;'>RESTRITO: LIDERANÇA</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         senha = st.text_input("Senha Admin", type="password")
@@ -117,23 +133,21 @@ elif st.session_state.tela == "login_admin":
                 st.session_state.tela = "master"
                 st.rerun()
 
-# TELA PAINEL MASTER (O PAINEL QUE VOCÊ QUERIA DE VOLTA)
+# TELA PAINEL MASTER
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>PAINEL MASTER</h1>", unsafe_allow_html=True)
-    
     st.markdown('<div class="card-janela">', unsafe_allow_html=True)
     if st.button("✨ GERAR NOVA CHAVE PARA MEMBRO"):
         nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
         salvar_chave(nova)
         st.success(f"Chave Gerada: {nova}")
     st.markdown('</div>', unsafe_allow_html=True)
-    
     st.write("### Chaves Disponíveis")
     st.json(listar_chaves())
 
 # TELA LOGIN MEMBRO
 elif st.session_state.tela == "login_membro":
-    st.markdown("<h2 style='text-align:center;'>VALIDAÇÃO DE MEMBRO</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#E50914;'>VALIDAÇÃO DE MEMBRO</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         chave_m = st.text_input("Sua Chave", type="password")
@@ -145,4 +159,4 @@ elif st.session_state.tela == "login_membro":
 # TELA MEMBRO
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>CONTEÚDO EXCLUSIVO</h1>", unsafe_allow_html=True)
-    st.write("Bem-vindo ao Maanaim Digital.")
+    st.write("Seja bem-vindo ao ambiente sagrado do Maanaim.")
