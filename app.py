@@ -7,9 +7,9 @@ st.set_page_config(page_title="KERIGMA | Master Portal", layout="wide")
 
 # 2. BANCO DE DADOS (TEXTO)
 ARQUIVO_ATIVAS = "chaves_ativas.txt"
-ARQUIVO_USADAS = "chaves_usadas.txt"
+ARQUIVO_USADOS = "chaves_usadas.txt"
 
-for arq in [ARQUIVO_ATIVAS, ARQUIVO_USADAS]:
+for arq in [ARQUIVO_ATIVAS, ARQUIVO_USADOS]:
     if not os.path.exists(arq):
         with open(arq, "w") as f: f.write("")
 
@@ -30,13 +30,14 @@ st.markdown("""
     .main-title { font-weight: 900; font-size: 5rem; color: #E50914; text-align: center; margin-top: 10vh; letter-spacing: -2px; }
     div.stButton > button { background-color: #E50914 !important; color: white !important; font-weight: 700 !important; border-radius: 8px !important; border: none; height: 50px;}
     .master-card { background: rgba(229, 9, 20, 0.05); padding: 40px; border-radius: 15px; border: 1px solid #E50914; text-align: center; }
+    .key-list { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 5px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
     </style>
     """, unsafe_allow_html=True)
 
-# 4. CONTROLE DE ESTADO (NAVEGAÇÃO)
+# 4. CONTROLE DE ESTADO
 if 'tela' not in st.session_state: st.session_state.tela = "home"
 
-# 5. BARRA LATERAL (ENTRADAS)
+# 5. BARRA LATERAL
 with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -45,7 +46,7 @@ with st.sidebar:
     st.markdown("### 👑 MASTER ACCESS")
     senha_mestre = st.text_input("Senha Mestre", type="password")
     if st.button("ENTRAR COMO ADMIN"):
-        if senha_mestre == "ADMIN123": # Altere aqui sua senha
+        if senha_mestre == "1234":  # SENHA ATUALIZADA
             st.session_state.tela = "master"
             st.rerun()
         else:
@@ -58,35 +59,32 @@ with st.sidebar:
     chave_membro = st.text_input("Chave de 10 dígitos", type="password")
     if st.button("VALIDAR MEMBRO"):
         ativas = listar_chaves(ARQUIVO_ATIVAS)
-        usadas = listar_chaves(ARQUIVO_USADAS)
+        usadas = listar_chaves(ARQUIVO_USADOS)
         if chave_membro in ativas and chave_membro not in usadas:
-            # Move para usadas
-            salvar_chave(chave_membro, ARQUIVO_USADAS)
-            # Remove das ativas
+            salvar_chave(chave_membro, ARQUIVO_USADOS)
             novas_ativas = [c for c in ativas if c != chave_membro]
             with open(ARQUIVO_ATIVAS, "w") as f:
                 for c in novas_ativas: f.write(c + "\n")
-            
             st.session_state.tela = "membro"
             st.rerun()
         else:
             st.error("Chave inválida ou já utilizada.")
 
+    st.write("---")
     if st.button("VOLTAR AO INÍCIO"):
         st.session_state.tela = "home"
         st.rerun()
 
-# 6. TELAS (CONTEÚDO PRINCIPAL)
+# 6. TELAS
 
-# TELA HOME (PÚBLICA)
+# TELA HOME
 if st.session_state.tela == "home":
     st.markdown('<h1 class="main-title">KERIGMA MAANAIM</h1>', unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; letter-spacing:15px; color:#444;'>DIGITAL MEDIA HUB</p>", unsafe_allow_html=True)
 
-# TELA MASTER (GERADOR DE CHAVES)
+# TELA MASTER (GERADOR)
 elif st.session_state.tela == "master":
     st.markdown('<h1 style="color:#E50914; text-align:center;">PAINEL MASTER GERAL</h1>', unsafe_allow_html=True)
-    st.write("---")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -95,29 +93,29 @@ elif st.session_state.tela == "master":
         if st.button("✨ GERAR NOVA CHAVE ALEATÓRIA"):
             nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
             salvar_chave(nova, ARQUIVO_ATIVAS)
-            st.success("Chave gerada e salva com sucesso!")
+            st.success("Nova chave gerada!")
             st.code(nova, language="text")
         
         st.write("---")
-        st.markdown("### Chaves Ativas no Sistema")
+        st.markdown("### Gestão de Chaves Ativas")
         ativas = listar_chaves(ARQUIVO_ATIVAS)
-        if ativas:
-            for c in ativas:
-                st.text(f"• {c}")
+        
+        if not ativas:
+            st.info("Nenhuma chave disponível.")
         else:
-            st.write("Nenhuma chave ativa.")
+            for c in ativas:
+                col_key, col_del = st.columns([3, 1])
+                col_key.code(c)
+                if col_del.button("Apagar", key=c):
+                    ativas.remove(c)
+                    with open(ARQUIVO_ATIVAS, "w") as f:
+                        for rest in ativas: f.write(rest + "\n")
+                    st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-# TELA MEMBRO (ÁREA DE PRODUÇÃO)
+# TELA MEMBRO
 elif st.session_state.tela == "membro":
     st.markdown('<h1 style="color:#E50914;">ÁREA DO INTEGRANTE</h1>', unsafe_allow_html=True)
     st.write("---")
-    st.success("Bem-vindo à área de produção. Sua chave foi descartada pelo sistema para sua segurança.")
-    
-    # Exemplo de conteúdo de mídia
-    cols = st.columns(3)
-    cols[0].metric("Arquivos Hoje", "12")
-    cols[1].metric("Usuários Online", "1")
-    cols[2].metric("Status do Servidor", "100%")
-    
+    st.success("Bem-vindo à área de produção.")
     st.file_uploader("Enviar arquivos de mídia", type=["mp4", "mov", "png", "jpg"])
