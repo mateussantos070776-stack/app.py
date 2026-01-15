@@ -1,83 +1,62 @@
-# ... (mantenha as configurações iniciais, CSS e sidebar como estão)
+# ... (mantenha o início do código igual até a parte das TELAS)
+
+# 5. TELAS
+if st.session_state.tela == "home":
+    st.markdown('<h1 class="main-title">KERIGMA MAANAIM</h1>', unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; letter-spacing:15px; color:#444;'>DIGITAL MEDIA HUB</p>", unsafe_allow_html=True)
+
+elif st.session_state.tela == "master":
+    st.markdown("<h2 style='color:#E50914;'>PAINEL MASTER</h2>", unsafe_allow_html=True)
+    if st.button("✨ GERAR NOVA CHAVE PARA MEMBRO"):
+        nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
+        salvar_chave(nova, ARQUIVO_ATIVAS)
+        st.success(f"Chave Gerada: {nova}")
+    
+    st.write("---")
+    st.subheader("Chaves Ativas")
+    st.write(listar_chaves(ARQUIVO_ATIVAS))
 
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#888; margin-bottom:40px;'>CENTRAL DE ACESSO KERIGMA</p>", unsafe_allow_html=True)
     
-    # Grid 3x3 para os tipos de conteúdos
-    # Aqui você pode personalizar cada "janela" para uma função específica
+    # Criando o Layout 3x3 de Janelas
     col1, col2, col3 = st.columns(3)
-
+    
     with col1:
-        st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
-        st.markdown("### 📸 GALERIA GERAL")
-        st.write("Fotos coletivas da comunidade.")
-        if st.button("ABRIR GALERIA", key="btn_galeria"):
-            st.session_state.sub_view = "galeria_fotos"
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-galeria">### 📸 FOTOS<br>Galeria Coletiva</div>', unsafe_allow_html=True)
+        if st.button("ACESSAR FOTOS"): st.session_state.sub_view = "fotos"
 
     with col2:
-        st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
-        st.markdown("### 🎥 VÍDEOS / REELS")
-        st.write("Brutos e editados para redes.")
-        if st.button("VER VÍDEOS", key="btn_videos"):
-            st.info("Módulo de vídeos em breve.")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-galeria">### 🎥 VÍDEOS<br>Arquivos Brutos</div>', unsafe_allow_html=True)
+        st.button("VER VÍDEOS", key="v1")
 
     with col3:
-        st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
-        st.markdown("### 🎨 IDENTIDADE")
-        st.write("Logos, fontes e assets visuais.")
-        if st.button("ACESSAR ASSETS", key="btn_assets"):
-            pass
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-galeria">### 🎨 ARTES<br>Identidade Visual</div>', unsafe_allow_html=True)
+        st.button("BAIXAR ASSETS", key="v2")
 
-    # Segunda Linha do Grid
+    # Segunda Linha
     col4, col5, col6 = st.columns(3)
     
     with col4:
-        st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
-        st.markdown("### 📂 DOCUMENTOS")
-        st.write("Roteiros e planejamentos.")
-        st.button("ABRIR PASTA", key="btn_docs")
-        st.markdown('</div>', unsafe_allow_html=True)
-
+        st.markdown('<div class="card-galeria">### 📝 ROTEIROS<br>Scripts e Ideias</div>', unsafe_allow_html=True)
+        st.button("LER AGORA", key="v3")
+    
     with col5:
-        st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
-        st.markdown("### 🎵 ÁUDIOS")
-        st.write("Trilhas e locuções.")
-        st.button("OUVIR", key="btn_audio")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-galeria">### 🎵 ÁUDIOS<br>Trilhas Kerigma</div>', unsafe_allow_html=True)
+        st.button("OUVIR", key="v4")
 
     with col6:
-        st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
-        st.markdown("### 🗓️ CRONOGRAMA")
-        st.write("Datas de postagens e eventos.")
-        st.button("VER CALENDÁRIO", key="btn_cal")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-galeria">### 🗓️ AGENDA<br>Cronograma Mídia</div>', unsafe_allow_html=True)
+        st.button("VER DATAS", key="v5")
 
-    # Logica para exibir a Galeria de Fotos se selecionada
-    if 'sub_view' in st.session_state and st.session_state.sub_view == "galeria_fotos":
+    # Exibição da Galeria (Só aparece se clicar no botão de fotos)
+    if st.session_state.get('sub_view') == "fotos":
         st.write("---")
-        st.subheader("📸 Galeria Coletiva de Fotos")
-        
-        # Upload dentro da sub-view
-        with st.expander("➕ ENVIAR NOVA FOTO"):
-            upload = st.file_uploader("Selecione a imagem", type=["jpg", "png", "jpeg"])
-            if upload:
-                caminho_destino = os.path.join(PASTA_GALERIA, upload.name)
-                with open(caminho_destino, "wb") as f:
-                    f.write(upload.getbuffer())
-                st.success("Imagem adicionada!")
-                st.rerun()
-
-        # Listagem das fotos
+        # Coloque aqui o código de listagem de arquivos da galeria que você já tinha
         arquivos = os.listdir(PASTA_GALERIA)
+        st.subheader("Galeria de Imagens")
         if arquivos:
-            img_cols = st.columns(3)
-            for i, nome_arquivo in enumerate(arquivos):
-                caminho_completo = os.path.join(PASTA_GALERIA, nome_arquivo)
-                with img_cols[i % 3]:
-                    st.image(caminho_completo, use_container_width=True)
-                    d1080 = preparar_download(caminho_completo, 1920)
-                    st.download_button(f"Baixar {nome_arquivo}", d1080, nome_arquivo, "image/png", key=f"dl_{i}")
+            cols_img = st.columns(4)
+            for idx, img in enumerate(arquivos):
+                with cols_img[idx % 4]:
+                    st.image(os.path.join(PASTA_GALERIA, img))
