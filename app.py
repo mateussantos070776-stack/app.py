@@ -1,8 +1,9 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO E REMOÇÃO DE MARCA D'ÁGUA REFORÇADA
+# 1. CONFIGURAÇÃO DA PÁGINA E REMOÇÃO TOTAL DE MARCAS (PC E CELULAR)
 st.set_page_config(page_title="Portal Viva o Propósito", page_icon="🙏", layout="wide")
 
+# CSS Reforçado para esconder marca d'água, rodapé, menu e botão de deploy
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -10,15 +11,16 @@ hide_st_style = """
             header {visibility: hidden;}
             .stAppDeployButton {display:none;}
             #stDecoration {display:none;}
-            [data-testid="stHeader"] {display:none;}
-            [data-testid="stFooter"] {display:none;}
-            /* Garante que o seletor de pastas fique bem visível no topo no mobile */
-            .stSelectbox {margin-bottom: 20px;}
+            [data-testid="stHeader"] {display:none !important;}
+            [data-testid="stFooter"] {display:none !important;}
+            div[data-testid="stStatusWidget"] {display:none !important;}
+            /* Remove o preenchimento excessivo no topo no celular */
+            .block-container {padding-top: 1rem !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# 2. BANCO DE DADOS (MEMÓRIA)
+# 2. BANCO DE DADOS (MEMÓRIA DA SESSÃO)
 if 'estudos' not in st.session_state:
     st.session_state.estudos = {
         "Jeremias 29": "Deus tem planos de paz e não de mal para dar o fim que desejais. Busque-o de todo o coração.",
@@ -26,7 +28,7 @@ if 'estudos' not in st.session_state:
         "Direção no Exílio": "Edificai casas e plantai pomares. Prosperar onde você está é uma ordem divina."
     }
 
-# 3. ÁREA DE LOGIN (ADMIN) - CONTINUA NA LATERAL
+# 3. BARRA LATERAL (LOGIN ADMIN NO CANTO SUPERIOR ESQUERDO)
 with st.sidebar:
     st.title("🔐 Administração")
     if 'admin_ativo' not in st.session_state:
@@ -41,29 +43,33 @@ with st.sidebar:
                     st.session_state.admin_ativo = True
                     st.rerun()
                 else:
-                    st.error("Erro!")
+                    st.error("Dados incorretos.")
     else:
+        st.write("✅ Modo Admin Ativado")
         if st.button("Sair do Sistema"):
             st.session_state.admin_ativo = False
             st.rerun()
 
 # 4. ÁREA PRINCIPAL (PASTAS ACESSÍVEIS NO TELEFONE)
 st.title("📂 MINHAS PREGAÇÕES")
+st.write("Selecione abaixo a pasta que deseja ler:")
 
-# Colocamos o seletor de pastas no corpo principal para não sumir no celular
-pasta = st.selectbox("Escolha uma pasta para abrir:", list(st.session_state.estudos.keys()))
+# Seletor de pastas no corpo da página para funcionar bem no mobile
+pasta = st.selectbox("", list(st.session_state.estudos.keys()))
 
 st.write("---")
 
 if st.session_state.admin_ativo:
-    st.warning("MODO EDIÇÃO ATIVO")
-    texto_editado = st.text_area("Editar conteúdo:", st.session_state.estudos[pasta], height=300)
+    st.info("MODO EDIÇÃO: Altere o texto abaixo e clique em salvar.")
+    # Campo de edição para o Admin
+    texto_editado = st.text_area("Editar conteúdo:", st.session_state.estudos[pasta], height=400)
     if st.button("💾 Salvar Alterações"):
-        st.session_state.estudos[pasta] = texto_editado
-        st.success("Salvo!")
+        st.session_state.estudos[pasta] = texto_editated
+        st.success("Conteúdo atualizado com sucesso!")
 else:
+    # Exibição limpa para o público
     st.header(f"📍 {pasta}")
-    st.write(st.session_state.estudos[pasta])
+    st.markdown(st.session_state.estudos[pasta])
 
 st.write("---")
-st.caption("Viva o Propósito - Acesso Público")
+st.caption("Site gerenciável - Viva o Propósito")
