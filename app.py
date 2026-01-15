@@ -1,9 +1,9 @@
 import streamlit as st
 
-# 1. CONFIGURAÇÃO E ESTILO (ESTILO PRIVALIA)
+# 1. CONFIGURAÇÃO INICIAL
 st.set_page_config(page_title="Viva o Propósito", layout="wide", initial_sidebar_state="collapsed")
 
-# Inicialização de Estados para evitar erros de navegação
+# Inicialização de Estados com Trava de Segurança
 if 'view' not in st.session_state: st.session_state.view = "home"
 if 'admin_logado' not in st.session_state: st.session_state.admin_logado = False
 if 'usuarios' not in st.session_state: st.session_state.usuarios = []
@@ -14,89 +14,69 @@ if 'pastas' not in st.session_state:
     }
 if 'ordem' not in st.session_state: st.session_state.ordem = list(st.session_state.pastas.keys())
 
-# CSS para Menu Superior Limpo
-st.markdown("""
-    <style>
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    .nav-bar { display: flex; justify-content: center; background: white; padding: 15px; border-bottom: 2px solid #eee; margin-bottom: 30px; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# 2. BARRA DE NAVEGAÇÃO SUPERIOR (ESTILO MARCAS)
-col_cad, col_ini, col_reg, col_est = st.columns([1, 1, 1, 1])
-
-# Botão de Acesso (Cadeado com Ação)
-if col_cad.button("🔒 ACESSO"):
+# 2. BARRA DE NAVEGAÇÃO SUPERIOR (ESTILO PRIVALIA)
+cols_nav = st.columns([1, 1, 1, 1])
+if cols_nav[0].button("🔒 ACESSO"):
     st.session_state.view = "admin_area" if st.session_state.admin_logado else "login_admin"
     st.rerun()
-
-if col_ini.button("🏠 INÍCIO"): st.session_state.view = "home"; st.rerun()
-if col_reg.button("📝 CADASTROS"): st.session_state.view = "tela_cadastro"; st.rerun()
-if col_est.button("📖 ESTUDOS"): st.session_state.view = "home"; st.rerun()
+if cols_nav[1].button("🏠 INÍCIO"): st.session_state.view = "home"; st.rerun()
+if cols_nav[2].button("📝 CADASTROS"): st.session_state.view = "tela_cadastro"; st.rerun()
+if cols_nav[3].button("📖 ESTUDOS"): st.session_state.view = "home"; st.rerun()
 
 st.write("---")
 
-# 3. LÓGICA DE TELAS E NAVEGAÇÃO
+# 3. LÓGICA DE NAVEGAÇÃO
 
-# TELA DE CADASTRO PÚBLICO
+# TELA DE CADASTRO
 if st.session_state.view == "tela_cadastro":
     if st.button("⬅️ VOLTAR"): st.session_state.view = "home"; st.rerun()
     st.title("📝 Cadastro de Membros")
-    with st.form("cad_user"):
-        nome = st.text_input("Nome Completo")
-        senha_u = st.text_input("Criar Senha", type="password")
+    with st.form("form_cad"):
+        n = st.text_input("Nome")
+        s = st.text_input("Senha", type="password")
         if st.form_submit_button("Cadastrar"):
-            if nome and senha_u:
-                st.session_state.usuarios.append({"nome": nome, "senha": senha_u})
-                st.success(f"Bem-vindo(a), {nome}!")
-            else: st.error("Preencha todos os campos.")
+            st.session_state.usuarios.append({"nome": n, "senha": s})
+            st.success("Cadastrado com sucesso!")
 
-# TELA DE LOGIN ADMIN (LOGIN: admin / SENHA: 1234)
+# TELA DE LOGIN ADMIN (admin / 1234)
 elif st.session_state.view == "login_admin":
     if st.button("⬅️ VOLTAR"): st.session_state.view = "home"; st.rerun()
-    st.subheader("🔑 Login do Administrador")
-    with st.form("login_form"):
+    st.subheader("🔑 Login Administrativo")
+    with st.form("login_admin_form"):
         u = st.text_input("Usuário")
-        s = st.text_input("Senha", type="password")
+        p = st.text_input("Senha", type="password")
         if st.form_submit_button("Entrar"):
-            # Credenciais Exatas: admin e 1234
-            if u == "admin" and s == "1234":
+            if u == "admin" and p == "1234":
                 st.session_state.admin_logado = True
                 st.session_state.view = "admin_area"
                 st.rerun()
-            else:
-                st.error("Usuário ou Senha incorretos.")
+            else: st.error("Incorreto.")
 
-# ÁREA ADMIN (ONDE FICA A PASTA USUÁRIOS)
+# ÁREA ADMIN
 elif st.session_state.view == "admin_area":
     if st.button("⬅️ SAIR DO ADMIN"): 
         st.session_state.admin_logado = False
         st.session_state.view = "home"; st.rerun()
-    
     st.title("🛡️ Painel de Gestão")
-    tab_ordem, tab_users = st.tabs(["🔄 Reordenar Vitrine", "👥 Pasta: Usuários"])
-    
-    with tab_ordem:
-        ordem_nova = st.multiselect("Ordem de exibição:", options=list(st.session_state.pastas.keys()), default=st.session_state.ordem)
-        if st.button("Salvar Ordem"):
-            st.session_state.ordem = ordem_nova
-            st.success("Vitrine atualizada!")
+    t1, t2 = st.tabs(["🔄 Ordem", "👥 Usuários"])
+    with t1:
+        nova = st.multiselect("Ordem:", options=list(st.session_state.pastas.keys()), default=st.session_state.ordem)
+        if st.button("Salvar"): st.session_state.ordem = nova; st.success("Ok!")
+    with t2:
+        for user in st.session_state.usuarios: st.write(f"👤 {user['nome']}")
 
-    with tab_users:
-        st.subheader("Pessoas que se cadastraram")
-        if st.session_state.usuarios:
-            for user in st.session_state.usuarios:
-                st.write(f"👤 **{user['nome']}**")
-        else:
-            st.info("Nenhum cadastro realizado ainda.")
-
-# HOME (VITRINE)
+# VITRINE HOME (COM CORREÇÃO DO ERRO)
 else:
-    st.title("✨ Nossas Coleções")
-    cols = st.columns(len(st.session_state.ordem))
-    for i, nome in enumerate(st.session_state.ordem):
-        with cols[i]:
-            st.image(st.session_state.pastas[nome]["img"])
-            st.subheader(nome)
-            if st.button(f"Abrir {nome}", key=nome):
-                st.info(st.session_state.pastas[nome]["texto"])
+    st.title("✨ Vitrine de Estudos")
+    qtd_pastas = len(st.session_state.ordem)
+    
+    if qtd_pastas > 0:
+        cols = st.columns(qtd_pastas) # Aqui o erro foi corrigido
+        for i, nome in enumerate(st.session_state.ordem):
+            with cols[i]:
+                st.image(st.session_state.pastas[nome]["img"])
+                st.subheader(nome)
+                if st.button(f"Abrir {nome}", key=nome):
+                    st.info(st.session_state.pastas[nome]["texto"])
+    else:
+        st.warning("Nenhuma pregação disponível no momento.")
