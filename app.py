@@ -29,15 +29,18 @@ def validar_telefone(tel):
     padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
     return re.match(padrao, tel)
 
-# 2. CSS MASTER (BARRA LATERAL FIXA E SEM SETA)
+# 2. CSS PARA PC - REMOÇÃO TOTAL DA SETA E BARRA FIXA
 st.markdown("""
     <style>
-    /* Remove o cabeçalho e o botão de fechar a sidebar (seta) */
-    [data-testid="stHeader"], [data-testid="sidebar-button"] {
+    /* Remove a seta de recolhimento e o cabeçalho superior no PC */
+    [data-testid="sidebar-user-education"],
+    [data-testid="stSidebarCollapseButton"],
+    button[kind="headerNoPadding"],
+    .st-emotion-cache-6qob1r {
         display: none !important;
     }
     
-    /* Mantém a barra lateral fixa e impede que seja recolhida */
+    /* Força a largura da barra lateral e impede que ela seja escondida */
     [data-testid="stSidebar"] {
         min-width: 260px !important;
         max-width: 260px !important;
@@ -45,41 +48,34 @@ st.markdown("""
         border-right: 2px solid #E50914 !important;
     }
 
+    /* Estilização Geral */
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
-    /* Campos de Escrita */
+    /* Inputs Brancos */
     .stTextInput input, .stTextArea textarea { 
         background-color: white !important; 
         color: black !important; 
-        border: 1px solid #ccc !important;
         font-weight: 600 !important;
     }
 
-    /* Botões Padrão Vermelhos */
+    /* Botões Vermelhos */
     .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
-        border: none !important;
-        padding: 12px 10px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
         border-radius: 8px !important;
-        width: 100% !important;
     }
-
-    .secao-titulo { color: #E50914; font-weight: 900; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 5px; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVEGAÇÃO LATERAL FIXA
+# 3. NAVEGAÇÃO LATERAL
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
     if st.button("🔴 ÁREA DE MEMBROS"): st.session_state.tela = "login_membro"; st.rerun()
     if st.button("⚙️ ACESSO ADMIN"): st.session_state.tela = "login_admin"; st.rerun()
-    st.write("---")
-    st.markdown("<p style='font-size:0.7rem; color:#444; text-align:center;'>V 1.0 | MAANAIM DIGITAL</p>", unsafe_allow_html=True)
 
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
@@ -100,10 +96,9 @@ elif st.session_state.tela == "login_membro":
 
 elif st.session_state.tela == "painel_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>CENTRAL DO MEMBRO</h1>", unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
+    c1, c2, c3, c4 = st.columns(4)
     with c1: st.button("📅 ESCALAS")
     with c2: st.button("🕒 HORÁRIOS")
-    c3, c4 = st.columns(2)
     with c3: st.button("🛠️ EQUIPAMENTOS")
     with c4: st.button("🗓️ DIAS")
 
@@ -118,25 +113,20 @@ elif st.session_state.tela == "login_admin":
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
     st.write("---")
-    
     col_g, col_m, col_n = st.columns(3)
-
     with col_g:
-        st.markdown('<p class="secao-titulo">🔑 Gerador</p>', unsafe_allow_html=True)
-        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "Aguardando...", language="text")
+        st.markdown('<p style="color:#E50914; font-weight:900;">🔑 Gerador</p>', unsafe_allow_html=True)
+        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "...", language="text")
         if st.button("✨ GERAR NOVA CHAVE"):
             st.session_state.chave_gerada = "".join([str(random.randint(0, 9)) for _ in range(10)])
             salvar_chave(st.session_state.chave_gerada); st.rerun()
-
     with col_m:
-        st.markdown('<p class="secao-titulo">📢 Mural</p>', unsafe_allow_html=True)
-        st.text_area("Aviso", placeholder="Digite o aviso...", height=68, label_visibility="collapsed")
+        st.markdown('<p style="color:#E50914; font-weight:900;">📢 Mural</p>', unsafe_allow_html=True)
+        st.text_area("Aviso", height=68, label_visibility="collapsed")
         st.button("PUBLICAR NO MURAL")
-
     with col_n:
-        st.markdown('<p class="secao-titulo">🔔 Notificações</p>', unsafe_allow_html=True)
-        st.text_input("Notif", placeholder="Assunto...", label_visibility="collapsed")
+        st.markdown('<p style="color:#E50914; font-weight:900;">🔔 Notificações</p>', unsafe_allow_html=True)
+        st.text_input("Notif", label_visibility="collapsed")
         st.button("ENVIAR NOTIFICAÇÃO")
-
     st.write("<br>", unsafe_allow_html=True)
     if st.button("⬅️ VOLTAR"): st.session_state.tela = "home"; st.rerun()
