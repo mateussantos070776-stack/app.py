@@ -3,8 +3,12 @@ import os
 import random
 import re
 
-# 1. CONFIGURAÇÃO DE TELA
-st.set_page_config(page_title="KERIGMA | Sistema", layout="wide", initial_sidebar_state="expanded")
+# 1. CONFIGURAÇÃO DE TELA (Nativa para iniciar expandida)
+st.set_page_config(
+    page_title="KERIGMA | Sistema", 
+    layout="wide", 
+    initial_sidebar_state="expanded" # Comando nativo para garantir que comece aberta
+)
 
 # --- INICIALIZAÇÃO DE ESTADOS ---
 if 'tela' not in st.session_state: 
@@ -16,7 +20,7 @@ ARQUIVO_ATIVAS = "chaves_ativas.txt"
 if not os.path.exists(ARQUIVO_ATIVAS):
     with open(ARQUIVO_ATIVAS, "w", encoding="utf-8") as f: f.write("")
 
-# --- FUNÇÕES DE SISTEMA ---
+# --- FUNÇÕES ---
 def listar_chaves():
     with open(ARQUIVO_ATIVAS, "r", encoding="utf-8") as f: 
         return [linha.strip() for linha in f.readlines()]
@@ -29,26 +33,20 @@ def validar_telefone(tel):
     padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
     return re.match(padrao, tel)
 
-# 2. CSS PARA PC - REMOÇÃO TOTAL DA SETA E BARRA FIXA
+# 2. CSS FINAL (Simples e Direto)
 st.markdown("""
     <style>
-    /* Remove a seta de recolhimento e o cabeçalho superior no PC */
-    [data-testid="sidebar-user-education"],
-    [data-testid="stSidebarCollapseButton"],
-    button[kind="headerNoPadding"],
-    .st-emotion-cache-6qob1r {
+    /* Esconde apenas a seta de recolhimento no topo da barra lateral */
+    button[title="Collapse sidebar"] {
         display: none !important;
     }
     
-    /* Força a largura da barra lateral e impede que ela seja escondida */
+    /* Garante que a barra lateral tenha contraste e borda */
     [data-testid="stSidebar"] {
-        min-width: 260px !important;
-        max-width: 260px !important;
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
     }
 
-    /* Estilização Geral */
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
     /* Inputs Brancos */
@@ -63,8 +61,6 @@ st.markdown("""
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
         font-weight: 800 !important;
-        text-transform: uppercase;
-        border-radius: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -104,8 +100,8 @@ elif st.session_state.tela == "painel_membro":
 
 elif st.session_state.tela == "login_admin":
     st.markdown("<h1 style='color:#E50914; text-align:center; margin-top:50px;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
-    _, col_adm, _ = st.columns([1, 2, 1])
-    with col_adm:
+    _, col_admin, _ = st.columns([1, 2, 1])
+    with col_admin:
         senha = st.text_input("Senha", type="password")
         if st.button("ACESSAR COMANDO"):
             if senha == "55420": st.session_state.tela = "master"; st.rerun()
