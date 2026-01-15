@@ -132,6 +132,13 @@ with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
+    # Botão Home no topo
+    if st.button("🏠 HOME"):
+        st.session_state.tela = "home"
+        st.session_state.sub_view = None
+        st.session_state.membro_autenticado = False
+        st.rerun()
+
     if st.button("🔴 ÁREA DE MEMBROS"):
         st.session_state.tela = "login_membro"
         st.rerun()
@@ -155,7 +162,7 @@ if st.session_state.tela == "home":
         chave_membro = st.text_input("", placeholder="INSIRA SUA CHAVE SAGRADA", type="password")
         if st.button("ENTRAR NO MAANAIM"):
             ativas = listar_chaves(ARQUIVO_ATIVAS)
-            if chave_membro == "55420": # Senha Admin também entra por aqui como master
+            if chave_membro == "55420":
                 st.session_state.tela = "master"
                 st.rerun()
             elif chave_membro in ativas:
@@ -165,7 +172,7 @@ if st.session_state.tela == "home":
             else:
                 st.error("Chave inválida.")
 
-# TELA: LOGIN ESPECÍFICO ADMIN
+# TELA: LOGIN ADMIN
 elif st.session_state.tela == "login_admin":
     st.markdown('<div style="height: 15vh;"></div>', unsafe_allow_html=True)
     st.markdown("<h2 style='text-align:center; color:#E50914;'>ACESSO RESTRITO LIDERANÇA</h2>", unsafe_allow_html=True)
@@ -179,7 +186,7 @@ elif st.session_state.tela == "login_admin":
             else:
                 st.error("Senha Administrativa Incorreta.")
 
-# TELA: LOGIN ESPECÍFICO MEMBRO
+# TELA: LOGIN MEMBRO
 elif st.session_state.tela == "login_membro":
     st.markdown('<div style="height: 15vh;"></div>', unsafe_allow_html=True)
     st.markdown("<h2 style='text-align:center; color:#E50914;'>VALIDAÇÃO DE INTEGRANTE</h2>", unsafe_allow_html=True)
@@ -209,7 +216,7 @@ elif st.session_state.tela == "escalas":
         nome = st.text_input("Nome")
         if st.button("ENVIAR"): st.success("Registrado!")
 
-# TELA: PAINEL MASTER (ADMIN)
+# TELA: PAINEL MASTER
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL MASTER</h1>", unsafe_allow_html=True)
     col_adm1, col_adm2 = st.columns(2)
