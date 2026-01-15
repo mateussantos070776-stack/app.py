@@ -66,7 +66,7 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* BOTÕES GERAIS (SIDEBAR E CORPO) */
+    /* BOTÕES GERAIS */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -84,7 +84,7 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
     }
 
-    /* Ajuste específico para os botões da Sidebar não ficarem gigantes */
+    /* Sidebar Buttons */
     [data-testid="stSidebar"] div.stButton > button {
         width: 100% !important;
         max-width: 250px !important;
@@ -136,9 +136,14 @@ with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
-    # NOVO BOTÃO FUNCIONAL NA BARRA LATERAL
-    if st.button("🔴 ÁREA DE SUPORTE"):
-        st.toast("Suporte técnico acionado! Verifique seu e-mail em breve.", icon="⚠️")
+    # BOTÃO ÁREA DE MEMBROS
+    if st.button("🔴 ÁREA DE MEMBROS"):
+        if st.session_state.tela != "home":
+             st.session_state.tela = "membro"
+             st.session_state.sub_view = None
+             st.rerun()
+        else:
+             st.warning("Por favor, insira sua chave primeiro.")
 
     st.write("---")
     if st.button("SAIR / INÍCIO"):
@@ -186,7 +191,7 @@ elif st.session_state.tela == "master":
         chaves = listar_chaves(ARQUIVO_ATIVAS)
         for c in chaves: st.code(c)
 
-# TELA: EXCLUSIVO MÍDIA
+# TELA: EXCLUSIVO MÍDIA (ÁREA DE MEMBROS)
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; letter-spacing:5px;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; color:#555; margin-bottom:50px; font-weight:700;'>ADMINISTRAÇÃO DE CONTEÚDO SANTO</p>", unsafe_allow_html=True)
@@ -213,7 +218,13 @@ elif st.session_state.tela == "membro":
     if st.session_state.get('sub_view') == "fotos":
         st.write("---")
         st.subheader("📸 Galeria de Imagens")
-        # Listagem de arquivos...
+        with st.expander("➕ ADICIONAR FOTO"):
+            upload = st.file_uploader("Upload", type=["jpg", "png", "jpeg"])
+            if upload:
+                with open(os.path.join(PASTA_GALERIA, upload.name), "wb") as f:
+                    f.write(upload.getbuffer())
+                st.rerun()
+
         arquivos = os.listdir(PASTA_GALERIA)
         if arquivos:
             cols_img = st.columns(4)
