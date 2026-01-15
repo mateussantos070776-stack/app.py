@@ -15,7 +15,7 @@ if 'tela' not in st.session_state:
 if 'chave_gerada' not in st.session_state: 
     st.session_state.chave_gerada = ""
 
-# 2. CSS MASTER - REMOÇÃO DE BORDAS E NAVEGAÇÃO RÁPIDA
+# 2. CSS MASTER - CORREÇÃO DO BOTÃO ENTRAR E LIMPEZA VISUAL
 st.markdown("""
     <style>
     /* REMOVE A BARRA BRANCA SUPERIOR (HEADER) */
@@ -23,25 +23,23 @@ st.markdown("""
         display: none !important;
     }
     
-    /* REMOVE O ESPAÇO DO TOPO QUE A BARRA BRANCA DEIXA */
     .stApp {
         margin-top: -50px !important;
         background-color: #050505;
     }
 
-    /* REMOVE A SETA DE RECOLHER (SIDEBAR SEMPRE FIXA) */
+    /* BARRA LATERAL FIXA */
     button[title="Collapse sidebar"], [data-testid="sidebar-button"] {
         display: none !important;
     }
 
-    /* ESTILO DA BARRA LATERAL FIXA */
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
         min-width: 260px !important;
     }
 
-    /* BOTÕES DA SIDEBAR PROPORCIONAIS */
+    /* BOTÕES DA SIDEBAR (VERMELHOS) */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -53,6 +51,23 @@ st.markdown("""
         margin-bottom: 5px !important;
     }
 
+    /* --- BOTÃO ESPECÍFICO: ENTRAR (ÁREA DE MEMBROS) --- */
+    /* Este seletor busca o botão dentro da área central quando a tela é login_membro */
+    div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+        font-weight: 800 !important;
+        border: none !important;
+        width: 100% !important;
+        height: 45px !important;
+        transition: 0.3s;
+    }
+    
+    div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button:hover {
+        background-color: #E0E0E0 !important;
+        color: #000000 !important;
+    }
+
     /* INPUTS BRANCOS */
     .stTextInput input, .stTextArea textarea {
         background-color: white !important;
@@ -61,18 +76,15 @@ st.markdown("""
         border-radius: 5px !important;
     }
 
-    /* TÍTULOS E TEXTOS */
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
     
-    /* REMOVE PADDINGS EXCESSIVOS PARA TUDO FICAR PROPORCIONAL */
     .block-container {
         padding-top: 2rem !important;
-        padding-bottom: 0rem !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL (SEM ALTERAÇÃO, APENAS FIXA)
+# 3. BARRA LATERAL (SEM ALTERAÇÃO)
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900; margin-bottom:20px;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -82,7 +94,7 @@ with st.sidebar:
     if st.button("⚙️ ACESSO ADMIN"): st.session_state.tela = "login_admin"; st.rerun()
     st.write("---")
 
-# 4. LÓGICA DE TELAS (SEM O MENU DE NAVEGAÇÃO RÁPIDA)
+# 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
     st.markdown('<h1 style="font-size:3.5rem; color:#E50914; text-align:center; margin-top:100px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
 
@@ -92,6 +104,7 @@ elif st.session_state.tela == "login_membro":
     with col:
         st.text_input("Nome Completo")
         st.text_input("Chave de Acesso", type="password")
+        # O botão abaixo agora será BRANCO com LETRA PRETA conforme o CSS acima
         if st.button("ENTRAR"): st.session_state.tela = "painel_membro"; st.rerun()
 
 elif st.session_state.tela == "chat":
