@@ -4,24 +4,38 @@ import random
 from PIL import Image
 import io
 
-# 1. CONFIGURAÇÃO DA PÁGINA
-st.set_page_config(page_title="KERIGMA | Master Portal", layout="wide")
+# 1. CONFIGURAÇÃO E CRIAÇÃO DE PASTAS
+st.set_page_config(page_title="KERIGMA | Galeria Coletiva", layout="wide")
 
-# 2. BANCO DE DADOS (TEXTO)
+PASTA_GALERIA = "galeria_kerigma"
 ARQUIVO_ATIVAS = "chaves_ativas.txt"
 ARQUIVO_USADOS = "chaves_usadas.txt"
+
+# Cria as pastas e arquivos necessários se não existirem
+if not os.path.exists(PASTA_GALERIA):
+    os.makedirs(PASTA_GALERIA)
 
 for arq in [ARQUIVO_ATIVAS, ARQUIVO_USADOS]:
     if not os.path.exists(arq):
         with open(arq, "w") as f: f.write("")
 
+# 2. FUNÇÕES DE SUPORTE
 def listar_chaves(arquivo):
     with open(arquivo, "r") as f: return f.read().splitlines()
 
 def salvar_chave(chave, arquivo):
     with open(arquivo, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PARA UI CINEMATOGRÁFICA
+def preparar_download(caminho_img, largura_alvo):
+    img = Image.open(caminho_img)
+    proporcao = largura_alvo / float(img.size[0])
+    altura_alvo = int((float(img.size[1]) * float(proporcao)))
+    img_redimensionada = img.resize((largura_alvo, altura_alvo), Image.LANCZOS)
+    buf = io.BytesIO()
+    img_redimensionada.save(buf, format="PNG")
+    return buf.getvalue()
+
+# 3. CSS PREMIUM
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
@@ -30,135 +44,95 @@ st.markdown("""
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     [data-testid="stSidebar"] { background-color: #0a0a0a !important; border-right: 2px solid #E50914 !important; }
     .main-title { font-weight: 900; font-size: 5rem; color: #E50914; text-align: center; margin-top: 10vh; letter-spacing: -2px; }
-    div.stButton > button { background-color: #E50914 !important; color: white !important; font-weight: 700 !important; border-radius: 8px !important; border: none; height: 50px;}
-    .master-card { background: rgba(229, 9, 20, 0.05); padding: 40px; border-radius: 15px; border: 1px solid #E50914; text-align: center; }
-    .img-container { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; }
+    div.stButton > button { background-color: #E50914 !important; color: white !important; font-weight: 700 !important; border-radius: 8px !important; height: 50px;}
+    .card-galeria { background: rgba(255, 255, 255, 0.03); border: 1px solid #333; border-radius: 10px; padding: 15px; margin-bottom: 20px; transition: 0.3s; }
+    .card-galeria:hover { border-color: #E50914; background: rgba(229, 9, 20, 0.05); }
     </style>
     """, unsafe_allow_html=True)
 
-# Função para redimensionar imagem para download
-def preparar_download(imagem_pil, largura_alvo):
-    # Calcula a altura mantendo o aspect ratio
-    proporcao = largura_alvo / float(imagem_pil.size[0])
-    altura_alvo = int((float(imagem_pil.size[1]) * float(proporcao)))
-    img_redimensionada = imagem_pil.resize((largura_alvo, altura_alvo), Image.LANCZOS)
-    
-    buf = io.BytesIO()
-    img_redimensionada.save(buf, format="PNG")
-    return buf.getvalue()
-
-# 4. CONTROLE DE ESTADO
 if 'tela' not in st.session_state: st.session_state.tela = "home"
 
-# 5. BARRA LATERAL
+# 4. BARRA LATERAL
 with st.sidebar:
     st.markdown("<h2 style='text-align:center; color:#E50914;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
-    # ACESSO ADMIN GERAL
-    st.markdown("### 👑 MASTER ACCESS")
+    # ADMIN
     senha_mestre = st.text_input("Senha Mestre", type="password")
     if st.button("ENTRAR COMO ADMIN"):
         if senha_mestre == "1234":
             st.session_state.tela = "master"
             st.rerun()
-        else:
-            st.error("Senha Mestre Inválida")
-
+    
     st.write("---")
-
-    # ACESSO INTEGRANTE
-    st.markdown("### 🔒 ACESSO MEMBRO")
-    chave_membro = st.text_input("Chave de 10 dígitos", type="password")
-    if st.button("VALIDAR MEMBRO"):
+    
+    # MEMBRO
+    chave_membro = st.text_input("Chave de Integrante", type="password")
+    if st.button("ACESSAR GALERIA"):
         ativas = listar_chaves(ARQUIVO_ATIVAS)
-        usadas = listar_chaves(ARQUIVO_USADOS)
-        if chave_membro in ativas and chave_membro not in usadas:
+        if chave_membro in ativas:
             salvar_chave(chave_membro, ARQUIVO_USADOS)
             novas_ativas = [c for c in ativas if c != chave_membro]
             with open(ARQUIVO_ATIVAS, "w") as f:
                 for c in novas_ativas: f.write(c + "\n")
             st.session_state.tela = "membro"
             st.rerun()
-        else:
-            st.error("Chave inválida ou já utilizada.")
-
+    
     st.write("---")
-    if st.button("VOLTAR AO INÍCIO"):
+    if st.button("SAIR / INÍCIO"):
         st.session_state.tela = "home"
         st.rerun()
 
-# 6. TELAS
+# 5. TELAS
 
-# TELA HOME
 if st.session_state.tela == "home":
     st.markdown('<h1 class="main-title">KERIGMA MAANAIM</h1>', unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; letter-spacing:15px; color:#444;'>DIGITAL MEDIA HUB</p>", unsafe_allow_html=True)
 
-# TELA MASTER (GERADOR)
 elif st.session_state.tela == "master":
-    st.markdown('<h1 style="color:#E50914; text-align:center;">PAINEL MASTER GERAL</h1>', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown('<div class="master-card">', unsafe_allow_html=True)
-        st.subheader("Gerador de Acessos")
-        if st.button("✨ GERAR NOVA CHAVE ALEATÓRIA"):
-            nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
-            salvar_chave(nova, ARQUIVO_ATIVAS)
-            st.success("Nova chave gerada!")
-            st.code(nova, language="text")
-        st.write("---")
-        st.markdown("### Chaves Ativas")
-        ativas = listar_chaves(ARQUIVO_ATIVAS)
-        for c in ativas:
-            c1, c2 = st.columns([3, 1])
-            c1.code(c)
-            if c2.button("Apagar", key=c):
-                novas = [x for x in ativas if x != c]
-                with open(ARQUIVO_ATIVAS, "w") as f:
-                    for r in novas: f.write(r + "\n")
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914;'>PAINEL MASTER</h2>", unsafe_allow_html=True)
+    if st.button("✨ GERAR NOVA CHAVE PARA MEMBRO"):
+        nova = "".join([str(random.randint(0, 9)) for _ in range(10)])
+        salvar_chave(nova, ARQUIVO_ATIVAS)
+        st.success(f"Chave Gerada: {nova}")
+    
+    st.write("---")
+    st.subheader("Chaves Ativas")
+    st.write(listar_chaves(ARQUIVO_ATIVAS))
 
-# TELA MEMBRO (UPLOAD E REDIMENSIONAMENTO)
 elif st.session_state.tela == "membro":
-    st.markdown('<h1 style="color:#E50914;">ÁREA DE PRODUÇÃO</h1>', unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914;'>GALERIA COLETIVA KERIGMA</h1>", unsafe_allow_html=True)
+    
+    # Upload de novo arquivo
+    with st.expander("➕ ADICIONAR NOVA FOTO À GALERIA"):
+        upload = st.file_uploader("Selecione a imagem", type=["jpg", "png", "jpeg"])
+        if upload:
+            caminho_destino = os.path.join(PASTA_GALERIA, upload.name)
+            with open(caminho_destino, "wb") as f:
+                f.write(upload.getbuffer())
+            st.success("Imagem adicionada à galeria de todos os membros!")
+            st.rerun()
+
     st.write("---")
     
-    st.subheader("📸 Processamento de Imagens")
-    arquivo_foto = st.file_uploader("Subir foto para mídia", type=["jpg", "png", "jpeg"])
-
-    if arquivo_foto:
-        img = Image.open(arquivo_foto)
-        
-        st.markdown('<div class="img-container">', unsafe_allow_html=True)
-        col_img, col_info = st.columns([1, 1])
-        
-        with col_img:
-            st.image(img, caption="Preview da Imagem", use_container_width=True)
-            
-        with col_info:
-            st.markdown("### Opções de Exportação")
-            st.write("Escolha a resolução para download:")
-            
-            # Botão Download 1080p
-            data_1080 = preparar_download(img, 1920)
-            st.download_button(
-                label="📥 Baixar em 1080p (Full HD)",
-                data=data_1080,
-                file_name=f"kerigma_1080p_{arquivo_foto.name}",
-                mime="image/png"
-            )
-            
-            st.write("") # Espaçador
-            
-            # Botão Download 720p
-            data_720 = preparar_download(img, 1280)
-            st.download_button(
-                label="📥 Baixar em 720p (HD)",
-                data=data_720,
-                file_name=f"kerigma_720p_{arquivo_foto.name}",
-                mime="image/png"
-            )
-            
-        st.markdown('</div>', unsafe_allow_html=True)
+    # Exibição da Galeria
+    arquivos = os.listdir(PASTA_GALERIA)
+    if not arquivos:
+        st.info("A galeria está vazia. Adicione a primeira foto acima!")
+    else:
+        # Cria um grid de 3 colunas
+        cols = st.columns(3)
+        for i, nome_arquivo in enumerate(arquivos):
+            caminho_completo = os.path.join(PASTA_GALERIA, nome_arquivo)
+            with cols[i % 3]:
+                st.markdown('<div class="card-galeria">', unsafe_allow_html=True)
+                st.image(caminho_completo, use_container_width=True)
+                st.write(f"📁 {nome_arquivo}")
+                
+                # Opções de Download
+                d1080 = preparar_download(caminho_completo, 1920)
+                st.download_button("Download 1080p", d1080, f"1080p_{nome_arquivo}", "image/png", key=f"d10{i}")
+                
+                d720 = preparar_download(caminho_completo, 1280)
+                st.download_button("Download 720p", d720, f"720p_{nome_arquivo}", "image/png", key=f"d72{i}")
+                st.markdown('</div>', unsafe_allow_html=True)
