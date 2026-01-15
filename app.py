@@ -32,21 +32,19 @@ def listar_chaves(arquivo):
 def salvar_chave(chave, arquivo):
     with open(arquivo, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM ATUALIZADO (FOCO EM ESTÉTICA E CORES)
+# 3. CSS PREMIUM (ESTÉTICA, GRADIENTES E CARDS)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
     
     header {visibility: hidden !important;}
     
-    /* Background com gradiente escuro profundo */
     .stApp { 
         background: radial-gradient(circle at center, #0f0f0f 0%, #050505 100%);
         color: white; 
         font-family: 'Montserrat', sans-serif; 
     }
     
-    /* Título Principal */
     .main-title { 
         font-family: 'Great Vibes', cursive; 
         font-weight: 400; 
@@ -68,7 +66,6 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Botões (Mantendo funcionalidade, melhorando brilho) */
     div.stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
@@ -77,6 +74,8 @@ st.markdown("""
         border: none !important;
         box-shadow: 0 4px 15px rgba(229, 9, 20, 0.2);
         transition: all 0.4s ease;
+        display: block;
+        margin: 0 auto;
     }
     
     div.stButton > button:hover {
@@ -84,7 +83,6 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
     }
 
-    /* Input centralizado com estilo Glassmorphism */
     div[data-testid="stTextInput"] input {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -93,7 +91,6 @@ st.markdown("""
         text-align: center;
     }
 
-    /* NOVOS CARDS 3x3 (EXCLUSIVO MÍDIA) */
     .card-janela {
         background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
         border: 1px solid rgba(229, 9, 20, 0.1);
@@ -106,6 +103,7 @@ st.markdown("""
         flex-direction: column;
         justify-content: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        margin-bottom: 10px;
     }
     
     .card-janela:hover { 
@@ -115,18 +113,8 @@ st.markdown("""
         box-shadow: 0 15px 40px rgba(229, 9, 20, 0.15);
     }
 
-    .card-janela h3 {
-        color: #E50914;
-        font-weight: 900;
-        letter-spacing: 2px;
-        margin-bottom: 10px;
-    }
-
-    .card-janela p {
-        color: #aaa;
-        font-size: 0.9rem;
-        font-weight: 300;
-    }
+    .card-janela h3 { color: #E50914; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; }
+    .card-janela p { color: #aaa; font-size: 0.9rem; font-weight: 300; }
 
     [data-testid="stSidebar"] { 
         background-color: #080808 !important; 
@@ -165,7 +153,7 @@ if st.session_state.tela == "home":
                 st.session_state.tela = "membro"
                 st.rerun()
             else:
-                st.error("Chave não reconhecida no sistema.")
+                st.error("Chave não reconhecida.")
 
 # TELA: PAINEL MASTER
 elif st.session_state.tela == "master":
@@ -179,25 +167,24 @@ elif st.session_state.tela == "master":
             salvar_chave(nova, ARQUIVO_ATIVAS)
             st.success(f"CHAVE: {nova}")
         st.markdown('</div>', unsafe_allow_html=True)
-    
     with col_adm2:
         st.subheader("CHAVES ATIVAS")
         chaves = listar_chaves(ARQUIVO_ATIVAS)
         for c in chaves: st.code(c)
 
-# TELA: EXCLUSIVO MÍDIA (ESTÉTICA MELHORADA)
+# TELA: EXCLUSIVO MÍDIA
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900; letter-spacing:5px;'>EXCLUSIVO MÍDIA</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; color:#555; margin-bottom:50px; font-weight:700;'>ADMINISTRAÇÃO DE CONTEÚDO SANTO</p>", unsafe_allow_html=True)
     
-    # Grid 3x3 com novos Cards
-    for i in range(2): # Duas linhas
+    # Listas de dados para o Grid
+    titulos = ["📸 FOTOS", "🎥 VÍDEOS", "🎨 ARTES", "📝 ROTEIROS", "🎵 ÁUDIOS", "🗓️ AGENDA"]
+    descricoes = ["Galeria Coletiva", "Arquivos Brutos", "Identidade Visual", "Scripts e Ideias", "Trilhas Kerigma", "Escala de Mídia"]
+    chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
+
+    # Grid 3x3 (2 linhas x 3 colunas)
+    for i in range(2):
         cols = st.columns(3)
-        indices = [1, 2, 3] if i == 0 else [4, 5, 6]
-        titulos = ["📸 FOTOS", "🎥 VÍDEOS", "🎨 ARTES", "📝 ROTEIROS", "🎵 ÁUDIOS", "🗓️ AGENDA"]
-        descricoes = ["Galeria Coletiva", "Arquivos Brutos", "Identidade Visual", "Scripts e Ideias", "Trilhas Kerigma", "Escala de Mídia"]
-         chaves_btn = ["btn_f", "btn_v", "btn_a", "btn_r", "btn_au", "btn_ag"]
-        
         for j in range(3):
             idx = (i * 3) + j
             with cols[j]:
@@ -208,14 +195,23 @@ elif st.session_state.tela == "membro":
                     </div>
                 """, unsafe_allow_html=True)
                 if st.button("ACESSAR", key=chaves_btn[idx]):
-                    if titulos[idx] == "📸 FOTOS": st.session_state.sub_view = "fotos"
+                    if titulos[idx] == "📸 FOTOS":
+                        st.session_state.sub_view = "fotos"
 
+    # Sub-view da Galeria
     if st.session_state.get('sub_view') == "fotos":
         st.write("---")
         st.subheader("📸 Galeria de Imagens")
-        # Logica de fotos simplificada para a base
+        with st.expander("➕ ADICIONAR FOTO"):
+            upload = st.file_uploader("Upload", type=["jpg", "png", "jpeg"])
+            if upload:
+                with open(os.path.join(PASTA_GALERIA, upload.name), "wb") as f:
+                    f.write(upload.getbuffer())
+                st.rerun()
+
         arquivos = os.listdir(PASTA_GALERIA)
-        cols_img = st.columns(4)
-        for i, img in enumerate(arquivos):
-            with cols_img[i % 4]:
-                st.image(os.path.join(PASTA_GALERIA, img), use_container_width=True)
+        if arquivos:
+            cols_img = st.columns(4)
+            for i, img in enumerate(arquivos):
+                with cols_img[i % 4]:
+                    st.image(os.path.join(PASTA_GALERIA, img), use_container_width=True)
