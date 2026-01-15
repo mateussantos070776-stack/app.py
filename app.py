@@ -30,19 +30,23 @@ def listar_chaves():
 def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a") as f: f.write(chave + "\n")
 
-# 3. CSS PREMIUM (BORDA BRANCA REMOVIDA)
+# 3. CSS PREMIUM (ESTILO DA SETA PERSONALIZADO)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap');
     
-    /* REMOVE A BARRA BRANCA DO TOPO (HEADER) */
-    header {visibility: hidden !important; height: 0px !important;}
-    [data-testid="stHeader"] {display: none !important;}
-    
-    /* AJUSTA O ESPAÇAMENTO PARA O CONTEÚDO SUBIR */
-    .block-container {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
+    /* REMOVE A LINHA DO TOPO */
+    [data-testid="stHeader"] {
+        background-color: rgba(0,0,0,0) !important;
+        border-bottom: none !important;
+    }
+
+    /* CUSTOMIZAÇÃO DA SETA (SVG): FUNDO BRANCO REDONDO E SETA VERMELHA */
+    button[kind="headerNoContext"] svg {
+        fill: #E50914 !important; /* Cor da seta */
+        background-color: white !important; /* Fundo redondo */
+        border-radius: 50% !important;
+        padding: 2px !important;
     }
 
     /* Fundo do App */
@@ -108,7 +112,6 @@ with st.sidebar:
 
 # TELA HOME
 if st.session_state.tela == "home":
-    st.markdown('<div style="height: 5vh;"></div>', unsafe_allow_html=True)
     st.markdown('<h1 class="main-title">Kerigma Maanaim</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">Digital Media Hub</p>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -159,4 +162,3 @@ elif st.session_state.tela == "login_membro":
 # TELA MEMBRO
 elif st.session_state.tela == "membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>CONTEÚDO EXCLUSIVO</h1>", unsafe_allow_html=True)
-    st.write("Seja bem-vindo ao ambiente sagrado do Maanaim.")
