@@ -29,14 +29,25 @@ def validar_telefone(tel):
     padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
     return re.match(padrao, tel)
 
-# 2. CSS MASTER
+# 2. CSS MASTER (BARRA LATERAL FIXA E SEM SETA)
 st.markdown("""
     <style>
-    [data-testid="stHeader"] { background-color: rgba(0,0,0,0) !important; }
-    .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
-    [data-testid="stSidebar"] { background-color: #080808 !important; border-right: 2px solid #E50914 !important; }
+    /* Remove o cabeçalho e o botão de fechar a sidebar (seta) */
+    [data-testid="stHeader"], [data-testid="sidebar-button"] {
+        display: none !important;
+    }
     
-    /* Campos de Escrita com Fundo Branco */
+    /* Mantém a barra lateral fixa e impede que seja recolhida */
+    [data-testid="stSidebar"] {
+        min-width: 260px !important;
+        max-width: 260px !important;
+        background-color: #080808 !important;
+        border-right: 2px solid #E50914 !important;
+    }
+
+    .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
+    
+    /* Campos de Escrita */
     .stTextInput input, .stTextArea textarea { 
         background-color: white !important; 
         color: black !important; 
@@ -60,13 +71,15 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVEGAÇÃO (APENAS SIDEBAR)
+# 3. NAVEGAÇÃO LATERAL FIXA
 with st.sidebar:
-    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>FERRAMENTAS</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
     if st.button("🔴 ÁREA DE MEMBROS"): st.session_state.tela = "login_membro"; st.rerun()
     if st.button("⚙️ ACESSO ADMIN"): st.session_state.tela = "login_admin"; st.rerun()
+    st.write("---")
+    st.markdown("<p style='font-size:0.7rem; color:#444; text-align:center;'>V 1.0 | MAANAIM DIGITAL</p>", unsafe_allow_html=True)
 
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
@@ -79,7 +92,7 @@ elif st.session_state.tela == "login_membro":
         nome = st.text_input("Nome Completo")
         telefone = st.text_input("Número de Telefone (DDD + 9)")
         chave = st.text_input("Chave de Acesso", type="password")
-        if st.button("ENTRAR"):
+        if st.button("VALIDAR ACESSO"):
             if not nome or len(nome.split()) < 2: st.error("Insira o nome completo.")
             elif not validar_telefone(telefone): st.error("Telefone inválido (DDD + 9).")
             elif chave in listar_chaves() or chave == "55420":
