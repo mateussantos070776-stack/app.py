@@ -3,11 +3,11 @@ import os
 import random
 import re
 
-# 1. CONFIGURAÇÃO DE TELA (Nativa para iniciar expandida)
+# 1. CONFIGURAÇÃO DE TELA (Nativa para garantir que a barra lateral esteja aberta)
 st.set_page_config(
     page_title="KERIGMA | Sistema", 
     layout="wide", 
-    initial_sidebar_state="expanded" # Comando nativo para garantir que comece aberta
+    initial_sidebar_state="expanded"
 )
 
 # --- INICIALIZAÇÃO DE ESTADOS ---
@@ -33,39 +33,43 @@ def validar_telefone(tel):
     padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
     return re.match(padrao, tel)
 
-# 2. CSS FINAL (Simples e Direto)
+# 2. CSS PARA FIXAR BARRA E TIRAR A SETA (Sem quebrar o layout)
 st.markdown("""
     <style>
-    /* Esconde apenas a seta de recolhimento no topo da barra lateral */
+    /* 1. Remove a seta de fechar e o cabeçalho branco superior */
+    [data-testid="stHeader"], 
+    [data-testid="sidebar-button"],
     button[title="Collapse sidebar"] {
         display: none !important;
     }
     
-    /* Garante que a barra lateral tenha contraste e borda */
+    /* 2. Força a barra lateral a aparecer com a borda vermelha */
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
+        visibility: visible !important;
     }
 
+    /* 3. Estilo Geral */
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
-    /* Inputs Brancos */
     .stTextInput input, .stTextArea textarea { 
         background-color: white !important; 
         color: black !important; 
         font-weight: 600 !important;
     }
 
-    /* Botões Vermelhos */
     .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
         font-weight: 800 !important;
+        text-transform: uppercase;
+        border-radius: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVEGAÇÃO LATERAL
+# 3. NAVEGAÇÃO LATERAL (Aparecerá fixa)
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -84,7 +88,7 @@ elif st.session_state.tela == "login_membro":
         nome = st.text_input("Nome Completo")
         telefone = st.text_input("Número de Telefone (DDD + 9)")
         chave = st.text_input("Chave de Acesso", type="password")
-        if st.button("VALIDAR ACESSO"):
+        if st.button("ENTRAR"):
             if not nome or len(nome.split()) < 2: st.error("Insira o nome completo.")
             elif not validar_telefone(telefone): st.error("Telefone inválido (DDD + 9).")
             elif chave in listar_chaves() or chave == "55420":
@@ -100,8 +104,8 @@ elif st.session_state.tela == "painel_membro":
 
 elif st.session_state.tela == "login_admin":
     st.markdown("<h1 style='color:#E50914; text-align:center; margin-top:50px;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
-    _, col_admin, _ = st.columns([1, 2, 1])
-    with col_admin:
+    _, col_adm, _ = st.columns([1, 2, 1])
+    with col_adm:
         senha = st.text_input("Senha", type="password")
         if st.button("ACESSAR COMANDO"):
             if senha == "55420": st.session_state.tela = "master"; st.rerun()
