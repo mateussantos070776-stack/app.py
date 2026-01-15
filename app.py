@@ -3,7 +3,7 @@ import os
 import random
 import re
 
-# 1. CONFIGURAÇÃO DE TELA
+# 1. CONFIGURAÇÃO DE TELA (Garante que a barra comece aberta)
 st.set_page_config(
     page_title="KERIGMA | Sistema", 
     layout="wide", 
@@ -15,8 +15,6 @@ if 'tela' not in st.session_state:
     st.session_state.tela = "home"
 if 'chave_gerada' not in st.session_state: 
     st.session_state.chave_gerada = ""
-if 'mensagens' not in st.session_state:
-    st.session_state.mensagens = []
 
 ARQUIVO_ATIVAS = "chaves_ativas.txt"
 if not os.path.exists(ARQUIVO_ATIVAS):
@@ -24,96 +22,69 @@ if not os.path.exists(ARQUIVO_ATIVAS):
 
 # --- FUNÇÕES ---
 def listar_chaves():
-    with open(ARQUIVO_ATIVAS, "r", encoding="utf-8") as f: 
-        return [linha.strip() for linha in f.readlines()]
+    try:
+        with open(ARQUIVO_ATIVAS, "r", encoding="utf-8") as f: 
+            return [linha.strip() for linha in f.readlines()]
+    except: return []
 
 def salvar_chave(chave):
     with open(ARQUIVO_ATIVAS, "a", encoding="utf-8") as f: 
         f.write(chave + "\n")
 
-def validar_telefone(tel):
-    padrao = r"^\(?\d{2}\)?\s?9\d{4}-?\d{4}$"
-    return re.match(padrao, tel)
-
-# 2. CSS MASTER (BARRA FIXA E ESTILIZAÇÃO)
+# 2. CSS MASTER (RESTAURANDO O VISUAL ORIGINAL)
 st.markdown("""
     <style>
-    /* Esconde botões de fechar e cabeçalho */
-    [data-testid="stHeader"], 
-    button[title="Collapse sidebar"], 
-    [data-testid="sidebar-button"] {
+    /* Remove a seta de recolhimento para manter a barra fixa */
+    [data-testid="sidebar-button"], button[title="Collapse sidebar"] {
         display: none !important;
     }
     
-    /* Fixa a Barra Lateral */
+    /* Configuração da Barra Lateral */
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
-        min-width: 280px !important;
+        min-width: 260px !important;
     }
 
+    /* Fundo do App */
     .stApp { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; }
     
-    /* Estilo dos Botões da Sidebar */
-    .stSidebar [data-testid="stButton"] button {
-        background: #111 !important;
-        border: 1px solid #333 !important;
-        color: #eee !important;
-        text-align: left !important;
-        justify-content: flex-start !important;
-        padding: 10px !important;
-        margin-bottom: -10px;
-    }
-    
-    .stSidebar [data-testid="stButton"] button:hover {
-        border-color: #E50914 !important;
-        color: #E50914 !important;
-    }
-
-    /* Inputs Brancos */
+    /* Inputs Brancos (Escrita Preta) */
     .stTextInput input, .stTextArea textarea { 
         background-color: white !important; 
         color: black !important; 
         font-weight: 600 !important;
     }
 
-    /* Botão de Ação Vermelho */
-    .btn-ver button {
+    /* Botões Vermelhos Estilizados */
+    .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: white !important;
         font-weight: 800 !important;
         text-transform: uppercase;
+        border-radius: 8px !important;
+        width: 100% !important;
+        border: none !important;
+        padding: 10px !important;
     }
     
-    .titulo-sidebar { color: #E50914; font-size: 0.8rem; font-weight: 800; margin-top: 20px; text-transform: uppercase; }
+    .secao-titulo { color: #E50914; font-weight: 900; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 5px; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL UNIFICADA (TODAS AS FUNÇÕES)
+# 3. NAVEGAÇÃO LATERAL (BARRA ORIGINAL)
 with st.sidebar:
-    st.markdown("<h1 style='color:#E50914; font-size:1.5rem; font-weight:900;'>SISTEMA KERIGMA</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>FERRAMENTAS</h2>", unsafe_allow_html=True)
     st.write("---")
     
-    # SEÇÃO NAVEGAÇÃO
-    st.markdown('<p class="titulo-sidebar">📍 Navegação Principal</p>', unsafe_allow_html=True)
+    # Botões de Navegação
     if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
     if st.button("🔴 ÁREA DE MEMBROS"): st.session_state.tela = "login_membro"; st.rerun()
+    if st.button("💬 CHAT"): st.session_state.tela = "chat"; st.rerun()
     if st.button("⚙️ ACESSO ADMIN"): st.session_state.tela = "login_admin"; st.rerun()
     
-    # SEÇÃO FERRAMENTAS DO MEMBRO (SÓ APARECE SE LOGADO OU PARA ATALHO)
-    st.markdown('<p class="titulo-sidebar">🛠️ Ferramentas Membro</p>', unsafe_allow_html=True)
-    if st.button("📅 ESCALAS"): st.toast("Acessando Escalas...")
-    if st.button("🕒 HORÁRIOS"): st.toast("Acessando Horários...")
-    if st.button("🛠️ EQUIPAMENTOS"): st.toast("Lista de Equipamentos...")
-    if st.button("💬 CHAT AO VIVO"): st.session_state.tela = "chat"; st.rerun()
-    
-    # SEÇÃO ADMINISTRATIVA
-    st.markdown('<p class="titulo-sidebar">🔒 Gestão Master</p>', unsafe_allow_html=True)
-    if st.button("🔑 GERADOR DE CHAVES"): st.session_state.tela = "master"; st.rerun()
-    if st.button("📢 PUBLICAR NO MURAL"): st.session_state.tela = "master"; st.rerun()
-    
     st.write("---")
-    st.markdown("<p style='font-size:0.6rem; color:#444; text-align:center;'>KERIGMA v2.0 | MAANAIM</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#444; font-size:0.7rem;'>SISTEMA KERIGMA v1.0</p>", unsafe_allow_html=True)
 
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
@@ -121,37 +92,42 @@ if st.session_state.tela == "home":
 
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
-    _, col_login, _ = st.columns([1, 1.5, 1])
+    _, col_login, _ = st.columns([1, 2, 1])
     with col_login:
         st.text_input("Nome Completo")
-        st.text_input("Telefone")
-        st.text_input("Chave", type="password")
-        st.markdown('<div class="btn-ver">', unsafe_allow_html=True)
-        if st.button("ENTRAR NO SISTEMA"): st.session_state.tela = "painel_membro"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.text_input("Número de Telefone")
+        st.text_input("Chave de Acesso", type="password")
+        if st.button("ENTRAR"): st.session_state.tela = "painel_membro"; st.rerun()
 
 elif st.session_state.tela == "chat":
     st.markdown("<h1 style='color:#E50914; text-align:center;'>💬 CHAT AO VIVO</h1>", unsafe_allow_html=True)
-    # Exemplo de Chat
-    chat_box = st.container(border=True)
-    for msg in st.session_state.mensagens: chat_box.write(msg)
-    
-    msg_input = st.text_input("Sua mensagem...")
-    if st.button("ENVIAR"):
-        if msg_input:
-            st.session_state.mensagens.append(f"Membro: {msg_input}")
-            st.rerun()
+    st.text_area("Conversa", value="[SISTEMA]: Chat iniciado.", height=300)
+    st.text_input("Mensagem")
+    st.button("ENVIAR")
+
+elif st.session_state.tela == "login_admin":
+    st.markdown("<h1 style='color:#E50914; text-align:center;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
+    _, col_adm, _ = st.columns([1, 2, 1])
+    with col_adm:
+        senha = st.text_input("Senha", type="password")
+        if st.button("ACESSAR COMANDO"):
+            if senha == "55420": st.session_state.tela = "master"; st.rerun()
 
 elif st.session_state.tela == "master":
-    st.markdown("<h1 style='color:#E50914; text-align:center;'>COMANDO MASTER</h1>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("### 🔑 Chave Atual")
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
+    st.write("---")
+    col_g, col_m, col_n = st.columns(3)
+    with col_g:
+        st.markdown('<p class="secao-titulo">🔑 Gerador</p>', unsafe_allow_html=True)
         st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "---")
-        if st.button("GERAR NOVA"):
-            st.session_state.chave_gerada = str(random.randint(100000, 999999))
-            st.rerun()
-    with col2:
-        st.markdown("### 📢 Aviso Global")
-        st.text_area("Texto do aviso")
+        if st.button("✨ GERAR NOVA CHAVE"):
+            st.session_state.chave_gerada = str(random.randint(100000000, 999999999))
+            salvar_chave(st.session_state.chave_gerada); st.rerun()
+    with col_m:
+        st.markdown('<p class="secao-titulo">📢 Mural</p>', unsafe_allow_html=True)
+        st.text_area("Aviso", height=68, label_visibility="collapsed")
         st.button("PUBLICAR")
+    with col_n:
+        st.markdown('<p class="secao-titulo">🔔 Notificações</p>', unsafe_allow_html=True)
+        st.text_input("Assunto", label_visibility="collapsed")
+        st.button("ENVIAR")
