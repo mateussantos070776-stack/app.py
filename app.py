@@ -50,7 +50,7 @@ with st.expander("🔐 Acesso Restrito"):
     user = st.text_input("Usuário")
     passw = st.text_input("Senha", type="password")
     if st.button("Entrar no Modo Editor"):
-        if user == "admin" and passw == "1234":
+        if user == "Marte" and passw == "Maarte55420@3":
             st.session_state.admin = True
             st.success("Modo Edição Ativo!")
         else:
