@@ -51,7 +51,7 @@ st.markdown("""
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
-        font-weight: 800 !important;
+        font-weight: 500 !important;
         border: none !important;
         width: 100% !important;
         height: 45px !important;
