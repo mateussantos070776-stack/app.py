@@ -141,11 +141,11 @@ elif st.session_state.tela == "login_admin":
     _, col_adm, _ = st.columns([1, 1.2, 1])
     with col_adm:
         senha = st.text_input("Senha Master", type="password")
-        if st.button("ACESSAR COMANDO"):
+        if st.button("ACESSAR SALA ADM"):
             if senha == "55420": st.session_state.tela = "master"; st.rerun()
 
 elif st.session_state.tela == "master":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL DE COMANDO MASTER</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL MÍDIA</h1>", unsafe_allow_html=True)
     st.write("---")
     c1, c2, c3 = st.columns(3)
     with c1:
