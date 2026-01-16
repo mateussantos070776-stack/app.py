@@ -6,7 +6,7 @@ import random
 st.set_page_config(
     page_title="KERIGMA | Sistema", 
     layout="wide", 
-    initial_sidebar_state="expanded" # Mantém a barra aberta ao iniciar
+    initial_sidebar_state="expanded"
 )
 
 # --- INICIALIZAÇÃO DE ESTADOS ---
@@ -20,19 +20,25 @@ if 'texto_mural' not in st.session_state:
 # 2. CSS MASTER
 st.markdown("""
     <style>
-    /* Removido: display:none do header para permitir acesso ao menu em telas menores */
-    
+    /* GARANTE QUE O CONTEÚDO NÃO FIQUE ESCONDIDO SOB A BARRA SUPERIOR */
     .stApp {
-        margin-top: -50px !important;
         background-color: #050505;
     }
 
-    /* Removido: display:none do sidebar-button para garantir que a barra possa ser controlada */
-
+    /* ESTILIZAÇÃO DA SIDEBAR PARA FICAR VISÍVEL */
     [data-testid="stSidebar"] {
-        background-color: #080808 !important;
-        border-right: 2px solid #E50914 !important;
+        background-color: #111111 !important; /* Cinza escuro para contraste */
+        border-right: 3px solid #E50914 !important; /* Borda vermelha mais grossa */
         min-width: 260px !important;
+    }
+
+    /* GARANTE QUE O TEXTO DENTRO DA SIDEBAR SEJA BRANCO */
+    [data-testid="stSidebar"] section[data-testid="stSidebarNav"] {
+        background-color: #111111 !important;
+    }
+    
+    [data-testid="stSidebar"] .stMarkdown p {
+        color: white !important;
     }
 
     /* BOTÕES DA SIDEBAR */
@@ -44,7 +50,8 @@ st.markdown("""
         border-radius: 8px !important;
         border: none !important;
         width: 100% !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 10px !important;
+        box-shadow: 0px 4px 10px rgba(229, 9, 20, 0.2);
     }
 
     /* BOTÕES CENTRAIS (VERMELHOS) */
@@ -58,43 +65,32 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    /* INPUTS BRANCOS */
+    /* INPUTS */
     .stTextInput input, .stTextArea textarea {
         background-color: white !important;
         color: #000000 !important;
         font-weight: 600 !important;
         border-radius: 5px !important;
     }
-    
-    .stTextInput input:focus, .stTextArea textarea:focus {
-        color: #E50914 !important;
-    }
 
-    /* CORREÇÃO DO GERADOR VERMELHO */
-    [data-testid='stCodeBlock'] code span {
-        color: #E50914 !important;
-    }
-    .stCodeBlock code {
-        color: #E50914 !important;
-        background-color: white !important;
-        font-size: 22px !important;
-        font-weight: 800 !important;
-    }
-    .stCodeBlock {
-        border: 1px solid #E50914 !important;
-        border-radius: 5px !important;
-        background-color: white !important;
-    }
-
+    /* TÍTULOS E TEXTOS */
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
-    .block-container { padding-top: 2rem !important; }
+    
+    /* REMOVE O BOTÃO DE FECHAR A SIDEBAR (FORÇA ELA A FICAR ABERTA) */
+    button[title="Collapse sidebar"] {
+        display: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL
+# 3. BARRA LATERAL (CONTEÚDO)
 with st.sidebar:
-    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900; margin-bottom:20px;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; font-size:12px; color:#888;'>CONECTANDO PROPÓSITOS</p>", unsafe_allow_html=True)
     st.write("---")
+    
+    # Navegação
     if st.button("🏠 HOME"): 
         st.session_state.tela = "home"
         st.rerun()
@@ -107,15 +103,17 @@ with st.sidebar:
     if st.button("⚙️ KERIGMA ADM"): 
         st.session_state.tela = "login_admin"
         st.rerun()
+    
     st.write("---")
+    st.markdown("<div style='position: fixed; bottom: 20px; width: 220px; text-align: center; color: #444;'>v1.0.2</div>", unsafe_allow_html=True)
 
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
-    st.markdown('<h1 style="font-size:3.5rem; color:#E50914; text-align:center; margin-top:100px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="font-size:3.5rem; color:#E50914; text-align:center; margin-top:80px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
     st.markdown(f"""
-        <div style="text-align:center; margin-top:30px; padding:20px; border:1px solid #E50914; border-radius:10px;">
-            <p style="color:#E50914; font-weight:bold; letter-spacing:2px;">MURAL DE AVISOS</p>
-            <h2 style="color:white; font-weight:300;">{st.session_state.texto_mural}</h2>
+        <div style="text-align:center; margin-top:30px; padding:30px; border:2px solid #E50914; border-radius:15px; background-color: rgba(229, 9, 20, 0.05);">
+            <p style="color:#E50914; font-weight:bold; letter-spacing:3px; margin-bottom:10px;">MURAL DE AVISOS</p>
+            <h2 style="color:white; font-weight:400; font-style: italic;">"{st.session_state.texto_mural}"</h2>
         </div>
     """, unsafe_allow_html=True)
 
@@ -138,10 +136,10 @@ elif st.session_state.tela == "painel_membro":
         st.rerun()
 
 elif st.session_state.tela == "chat":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>EM PREPARAÇÃO</h1>", unsafe_allow_html=True)
-    st.text_area("Mensagens", value="Sistema pronto.", height=300, label_visibility="collapsed")
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CHAT DA EQUIPE</h1>", unsafe_allow_html=True)
+    st.text_area("Mensagens", value="Sistema pronto. Aguardando mensagens...", height=300, label_visibility="collapsed")
     c_msg, c_send = st.columns([4, 1])
-    with c_msg: st.text_input("Sua mensagem...", key="msg_input", label_visibility="collapsed")
+    with c_msg: st.text_input("Sua mensagem...", key="chat_input", label_visibility="collapsed")
     with c_send: st.button("ENVIAR")
 
 elif st.session_state.tela == "login_admin":
@@ -167,7 +165,7 @@ elif st.session_state.tela == "master":
             st.rerun()
     with c2:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>📢 MURAL</p>", unsafe_allow_html=True)
-        novo_aviso = st.text_area("Escreva aqui o aviso para a Home", height=68, label_visibility="collapsed")
+        novo_aviso = st.text_area("Novo aviso...", height=68, label_visibility="collapsed")
         if st.button("PUBLICAR"):
             st.session_state.texto_mural = novo_aviso
             st.rerun()
