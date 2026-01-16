@@ -66,15 +66,15 @@ st.markdown("""
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button:hover {
         background-color: #E0E0E0 !important;
         color: #000000 !important;
-    }
 
+        
     /* INPUTS BRANCOS */
-.stTextInput input, .stTextArea textarea {
-    background-color: white !important;
-    color: #000000 !important; /* Aqui define a LETRA PRETA */
-    font-weight: 600 !important;
-    border-radius: 5px !important;
-}
+    .stTextInput input, .stTextArea textarea {
+        background-color: white !important;
+        color: #000000 !important; /* Letra preta ao digitar */
+        font-weight: 600 !important;
+        border-radius: 5px !important;
+    }
 
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
     
