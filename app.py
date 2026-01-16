@@ -37,12 +37,12 @@ st.markdown("""
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
         min-width: 260px !important;
-    }
 
+        
     /* BOTÕES DA SIDEBAR (VERMELHOS) */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
-        color: white !important;
+        color: #FFFFFF !important; /* LETRA BRANCA */
         font-weight: 700 !important;
         height: 48px !important;
         border-radius: 8px !important;
