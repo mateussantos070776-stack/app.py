@@ -18,7 +18,9 @@ if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 
 # 2. CSS MASTER
-st.markdown("""
+st.markdown("[data-testid="stCodeBlock"] code span {
+    color: #E50914 !important;
+}""
     <style>
     header, [data-testid="stHeader"] { display: none !important; }
     
