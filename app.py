@@ -35,7 +35,7 @@ st.markdown("""
         min-width: 260px !important;
     }
 
-    /* BOTÕES DA SIDEBAR (VERMELHOS) */
+    /* BOTÕES DA SIDEBAR (VERMELHOS COM LETRA BRANCA) */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -75,6 +75,18 @@ st.markdown("""
     .stTextInput input::placeholder, .stTextArea textarea::placeholder {
         color: #000000 !important;
         opacity: 0.6;
+    }
+
+    /* CSS PARA O GERADOR (FORÇAR VERMELHO E BOTÃO COPIAR) */
+    .stCodeBlock code {
+        color: #E50914 !important;
+        background-color: white !important;
+        font-size: 22px !important;
+        font-weight: 800 !important;
+    }
+    .stCodeBlock {
+        border: 1px solid #E50914 !important;
+        border-radius: 5px !important;
     }
 
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
@@ -131,16 +143,9 @@ elif st.session_state.tela == "master":
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>🔑 GERADOR</p>", unsafe_allow_html=True)
-        
-        # EXIBIÇÃO DO NÚMERO EM CAIXA BRANCA COM LETRA VERMELHA (RESOLVE O VERDE)
         chave = st.session_state.chave_gerada if st.session_state.chave_gerada else "---"
-        st.markdown(f"""
-            <div style="background-color: white; color: #E50914; padding: 10px; 
-                        border-radius: 5px; text-align: center; font-size: 25px; 
-                        font-weight: 800; border: 1px solid #E50914; margin-bottom: 10px;">
-                {chave}
-            </div>
-        """, unsafe_allow_html=True)
+        # O botão de copiar aparece nativamente aqui
+        st.code(chave)
         
         if st.button("NOVA CHAVE"):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
