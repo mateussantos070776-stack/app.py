@@ -47,7 +47,7 @@ st.markdown("""
         margin-bottom: 5px !important;
     }
 
-    /* BOTÕES CENTRAIS (AGORA VERMELHOS - ENTRAR, PUBLICAR, GERAR) */
+    /* BOTÕES CENTRAIS (VERMELHOS) */
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -75,6 +75,14 @@ st.markdown("""
     .stTextInput input::placeholder, .stTextArea textarea::placeholder {
         color: #000000 !important;
         opacity: 0.6;
+    }
+
+    /* ALTERAÇÃO SOLICITADA: NÚMERO DO GERADOR EM VERMELHO */
+    code {
+        color: #E50914 !important;
+        background-color: transparent !important;
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
     }
 
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
@@ -131,6 +139,7 @@ elif st.session_state.tela == "master":
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>🔑 GERADOR</p>", unsafe_allow_html=True)
+        # O componente st.code agora seguirá a regra de cor vermelha definida no CSS acima
         st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "---")
         if st.button("NOVA CHAVE"):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
