@@ -42,7 +42,7 @@ st.markdown("""
     /* BOTÕES DA SIDEBAR (VERMELHOS) */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
-        color: #FFFFFF !important; /* LETRA BRANCA */
+        color: #E50914 !important; /* LETRA BRANCA */
         font-weight: 700 !important;
         height: 48px !important;
         border-radius: 8px !important;
