@@ -35,7 +35,7 @@ st.markdown("""
         min-width: 260px !important;
     }
 
-    /* BOTÕES DA SIDEBAR (VERMELHOS) */
+    /* BOTÕES DA SIDEBAR */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -58,7 +58,7 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    /* INPUTS BRANCOS COM FOCO EM VERMELHO */
+    /* INPUTS BRANCOS */
     .stTextInput input, .stTextArea textarea {
         background-color: white !important;
         color: #000000 !important;
@@ -70,7 +70,7 @@ st.markdown("""
         color: #E50914 !important;
     }
 
-    /* CORREÇÃO DO GERADOR: FORÇA VERMELHO NO LUGAR DO VERDE */
+    /* CORREÇÃO DO GERADOR VERMELHO */
     [data-testid='stCodeBlock'] code span {
         color: #E50914 !important;
     }
@@ -117,7 +117,17 @@ elif st.session_state.tela == "login_membro":
     with col:
         st.text_input("Nome Completo")
         st.text_input("Chave de Acesso", type="password")
-        if st.button("ENTRAR"): st.session_state.tela = "painel_membro"; st.rerun()
+        if st.button("ENTRAR"): 
+            st.session_state.tela = "painel_membro"
+            st.rerun()
+
+elif st.session_state.tela == "painel_membro":
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL DO MEMBRO</h1>", unsafe_allow_html=True)
+    st.write("---")
+    st.info("Bem-vindo! Esta é a sua área de trabalho da Equipe Mídia.")
+    if st.button("VOLTAR"):
+        st.session_state.tela = "home"
+        st.rerun()
 
 elif st.session_state.tela == "chat":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>💬 CHAT AO VIVO</h1>", unsafe_allow_html=True)
