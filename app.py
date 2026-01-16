@@ -64,8 +64,12 @@ st.markdown("""
         color: #000000 !important;
         font-weight: 600 !important;
         border-radius: 5px !important;
+
     }
-    
+    /* NOVA REGRA: COR DA LETRA AO CLICAR (FOCO) */
+    .stTextInput input:focus, .stTextArea textarea:focus {
+        color: #E50914 !important;
+    }
     /* COR DA LETRA ANTES DE DIGITAR (PLACEHOLDER) */
     .stTextInput input::placeholder, .stTextArea textarea::placeholder {
         color: #000000 !important;
