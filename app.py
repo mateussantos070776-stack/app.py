@@ -18,7 +18,7 @@ if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 
 # 2. CSS MASTER
-st.markdown("<style>[data-testid='stCodeBlock'] code span { color: #E50914 !important; }</style>", unsafe_allow_html=True)
+st.markdown("""
     <style>
     header, [data-testid="stHeader"] { display: none !important; }
     
@@ -35,7 +35,7 @@ st.markdown("<style>[data-testid='stCodeBlock'] code span { color: #E50914 !impo
         min-width: 260px !important;
     }
 
-    /* BOTÕES DA SIDEBAR (VERMELHOS COM LETRA BRANCA) */
+    /* BOTÕES DA SIDEBAR (VERMELHOS) */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -58,7 +58,7 @@ st.markdown("<style>[data-testid='stCodeBlock'] code span { color: #E50914 !impo
         border-radius: 8px !important;
     }
 
-    /* INPUTS BRANCOS */
+    /* INPUTS BRANCOS COM FOCO EM VERMELHO */
     .stTextInput input, .stTextArea textarea {
         background-color: white !important;
         color: #000000 !important;
@@ -66,19 +66,12 @@ st.markdown("<style>[data-testid='stCodeBlock'] code span { color: #E50914 !impo
         border-radius: 5px !important;
     }
     
-    /* COR DA LETRA AO CLICAR (FOCO) */
     .stTextInput input:focus, .stTextArea textarea:focus {
         color: #E50914 !important;
     }
 
-    /* COR DA LETRA ANTES DE DIGITAR (PLACEHOLDER) */
-    .stTextInput input::placeholder, .stTextArea textarea::placeholder {
-        color: #000000 !important;
-        opacity: 0.6;
-    }
-
-    /* --- CORREÇÃO DEFINITIVA DO VERDE --- */
-    [data-testid="stCodeBlock"] code span {
+    /* CORREÇÃO DO GERADOR: FORÇA VERMELHO NO LUGAR DO VERDE */
+    [data-testid='stCodeBlock'] code span {
         color: #E50914 !important;
     }
     .stCodeBlock code {
@@ -148,8 +141,7 @@ elif st.session_state.tela == "master":
     with c1:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>🔑 GERADOR</p>", unsafe_allow_html=True)
         chave = st.session_state.chave_gerada if st.session_state.chave_gerada else "---"
-        st.code(chave) # Botão copiar preservado
-        
+        st.code(chave)
         if st.button("NOVA CHAVE"):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
             st.rerun()
