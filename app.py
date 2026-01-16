@@ -14,7 +14,6 @@ if 'tela' not in st.session_state:
     st.session_state.tela = "home"
 if 'chave_gerada' not in st.session_state: 
     st.session_state.chave_gerada = ""
-# NOVO: Estado para armazenar o texto do Mural
 if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 
@@ -36,7 +35,7 @@ st.markdown("""
         min-width: 260px !important;
     }
 
-    /* BOTÕES DA SIDEBAR (VERMELHOS COM LETRA BRANCA) */
+    /* BOTÕES DA SIDEBAR (VERMELHOS) */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -48,28 +47,30 @@ st.markdown("""
         margin-bottom: 5px !important;
     }
 
-    /* BOTÃO ENTRAR (BRANCO) */
+    /* BOTÕES CENTRAIS (AGORA VERMELHOS - ENTRAR, PUBLICAR, GERAR) */
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
+        background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
+        color: #FFFFFF !important;
         font-weight: 800 !important;
         border: none !important;
         width: 100% !important;
         height: 45px !important;
+        border-radius: 8px !important;
     }
 
-    /* INPUTS BRANCOS COM LETRA PRETA */
+    /* INPUTS BRANCOS */
     .stTextInput input, .stTextArea textarea {
         background-color: white !important;
         color: #000000 !important;
         font-weight: 600 !important;
         border-radius: 5px !important;
-
     }
-    /* NOVA REGRA: COR DA LETRA AO CLICAR (FOCO) */
+    
+    /* COR DA LETRA AO CLICAR (FOCO) */
     .stTextInput input:focus, .stTextArea textarea:focus {
         color: #E50914 !important;
     }
+
     /* COR DA LETRA ANTES DE DIGITAR (PLACEHOLDER) */
     .stTextInput input::placeholder, .stTextArea textarea::placeholder {
         color: #000000 !important;
@@ -77,7 +78,6 @@ st.markdown("""
     }
 
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
-    
     .block-container { padding-top: 2rem !important; }
     </style>
     """, unsafe_allow_html=True)
@@ -95,7 +95,6 @@ with st.sidebar:
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
     st.markdown('<h1 style="font-size:3.5rem; color:#E50914; text-align:center; margin-top:100px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
-    # EXIBIÇÃO DO CONTEÚDO DO MURAL
     st.markdown(f"""
         <div style="text-align:center; margin-top:30px; padding:20px; border:1px solid #E50914; border-radius:10px;">
             <p style="color:#E50914; font-weight:bold; letter-spacing:2px;">MURAL DE AVISOS</p>
@@ -138,7 +137,6 @@ elif st.session_state.tela == "master":
             st.rerun()
     with c2:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>📢 MURAL</p>", unsafe_allow_html=True)
-        # Captura o novo aviso
         novo_aviso = st.text_area("Escreva aqui o aviso para a Home", height=68, label_visibility="collapsed")
         if st.button("PUBLICAR"):
             st.session_state.texto_mural = novo_aviso
