@@ -96,9 +96,9 @@ with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900; margin-bottom:20px;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
-    if st.button("🔴 ÁREA DE MEMBROS"): st.session_state.tela = "login_membro"; st.rerun()
+    if st.button("🔴 MEMBROS MÍDIA"): st.session_state.tela = "login_membro"; st.rerun()
     if st.button("💬 CHAT"): st.session_state.tela = "chat"; st.rerun()
-    if st.button("⚙️ ACESSO ADMIN"): st.session_state.tela = "login_admin"; st.rerun()
+    if st.button("⚙️ KERIGMA ADM"): st.session_state.tela = "login_admin"; st.rerun()
     st.write("---")
 
 # 4. LÓGICA DE TELAS
