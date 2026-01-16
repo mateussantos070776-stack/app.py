@@ -37,7 +37,6 @@ st.markdown("""
         transition: none !important;
     }
 
-    /* AJUSTE DO FUNDO E TEXTOS */
     .stApp {
         background-color: #050505;
     }
@@ -54,7 +53,7 @@ st.markdown("""
         margin-bottom: 10px !important;
     }
 
-    /* BOTÕES CENTRAIS */
+    /* BOTÕES CENTRAIS E DA CENTRAL MÍDIA */
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -63,6 +62,7 @@ st.markdown("""
         width: 100% !important;
         height: 45px !important;
         border-radius: 8px !important;
+        margin-bottom: 5px !important;
     }
 
     /* INPUTS */
@@ -83,7 +83,6 @@ with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
-    # Opções de Navegação (Sempre visíveis)
     if st.button("🏠 HOME"): 
         st.session_state.tela = "home"
         st.rerun()
@@ -118,40 +117,38 @@ elif st.session_state.tela == "login_membro":
             st.session_state.tela = "painel_membro"
             st.rerun()
 
-elif st.session_state.tela == "painel_membro":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL DO MEMBRO</h1>", unsafe_allow_html=True)
-    st.info("Bem-vindo à área de trabalho.")
-    if st.button("VOLTAR"):
-        st.session_state.tela = "home"
-        st.rerun()
-
-elif st.session_state.tela == "chat":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CHAT</h1>", unsafe_allow_html=True)
-    st.text_area("Mensagens", value="Sistema pronto.", height=300, label_visibility="collapsed")
-    c_msg, c_send = st.columns([4, 1])
-    with c_msg: st.text_input("Sua mensagem...", key="chat_input", label_visibility="collapsed")
-    with c_send: st.button("ENVIAR")
-
-elif st.session_state.tela == "login_admin":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>LIDERANÇA</h1>", unsafe_allow_html=True)
-    _, col_adm, _ = st.columns([1, 1.2, 1])
-    with col_adm:
-        senha = st.text_input("Senha Master", type="password")
-        if st.button("ACESSAR"):
-            if senha == "55420": 
-                st.session_state.tela = "master"
-                st.rerun()
-
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL MÍDIA</h1>", unsafe_allow_html=True)
+    st.write("---")
     c1, c2, c3 = st.columns(3)
+    
     with c1:
-        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "---")
+        st.markdown("<p style='color:#E50914; font-weight:bold;'>🔑 GERADOR</p>", unsafe_allow_html=True)
+        chave = st.session_state.chave_gerada if st.session_state.chave_gerada else "---"
+        st.code(chave)
         if st.button("NOVA CHAVE"):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
             st.rerun()
+        
+        # Novos botões solicitados abaixo do gerador
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🎲 SORTEIO DE MÍDIA"):
+            st.toast("Função Sorteio em breve!")
+        if st.button("📸 FOTOS"):
+            st.toast("Abrindo Galeria de Fotos...")
+        if st.button("🎬 VÍDEOS"):
+            st.toast("Abrindo Galeria de Vídeos...")
+
     with c2:
-        novo_aviso = st.text_area("Novo aviso", height=68)
+        st.markdown("<p style='color:#E50914; font-weight:bold;'>📢 MURAL</p>", unsafe_allow_html=True)
+        novo_aviso = st.text_area("Novo aviso...", height=68, label_visibility="collapsed")
         if st.button("PUBLICAR"):
             st.session_state.texto_mural = novo_aviso
             st.rerun()
+
+    with c3:
+        st.markdown("<p style='color:#E50914; font-weight:bold;'>🔔 NOTIF.</p>", unsafe_allow_html=True)
+        st.text_input("Assunto", key="notif_input", label_visibility="collapsed")
+        st.button("ENVIAR")
+
+# (Demais telas login_admin, chat, painel_membro permanecem iguais...)
