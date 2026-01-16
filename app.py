@@ -77,7 +77,10 @@ st.markdown("""
         opacity: 0.6;
     }
 
-    /* CSS PARA O GERADOR (FORÇAR VERMELHO E BOTÃO COPIAR) */
+    /* --- CORREÇÃO DEFINITIVA DO VERDE --- */
+    [data-testid="stCodeBlock"] code span {
+        color: #E50914 !important;
+    }
     .stCodeBlock code {
         color: #E50914 !important;
         background-color: white !important;
@@ -87,6 +90,7 @@ st.markdown("""
     .stCodeBlock {
         border: 1px solid #E50914 !important;
         border-radius: 5px !important;
+        background-color: white !important;
     }
 
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
@@ -144,8 +148,7 @@ elif st.session_state.tela == "master":
     with c1:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>🔑 GERADOR</p>", unsafe_allow_html=True)
         chave = st.session_state.chave_gerada if st.session_state.chave_gerada else "---"
-        # O botão de copiar aparece nativamente aqui
-        st.code(chave)
+        st.code(chave) # Botão copiar preservado
         
         if st.button("NOVA CHAVE"):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
