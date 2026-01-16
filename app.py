@@ -77,14 +77,6 @@ st.markdown("""
         opacity: 0.6;
     }
 
-    /* ALTERAÇÃO SOLICITADA: NÚMERO DO GERADOR EM VERMELHO */
-    code {
-        color: #E50914 !important;
-        background-color: transparent !important;
-        font-size: 1.5rem !important;
-        font-weight: 800 !important;
-    }
-
     h1, h2, h3, p { font-family: 'Montserrat', sans-serif; color: white; }
     .block-container { padding-top: 2rem !important; }
     </style>
@@ -139,8 +131,17 @@ elif st.session_state.tela == "master":
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>🔑 GERADOR</p>", unsafe_allow_html=True)
-        # O componente st.code agora seguirá a regra de cor vermelha definida no CSS acima
-        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "---")
+        
+        # EXIBIÇÃO DO NÚMERO EM CAIXA BRANCA COM LETRA VERMELHA (RESOLVE O VERDE)
+        chave = st.session_state.chave_gerada if st.session_state.chave_gerada else "---"
+        st.markdown(f"""
+            <div style="background-color: white; color: #E50914; padding: 10px; 
+                        border-radius: 5px; text-align: center; font-size: 25px; 
+                        font-weight: 800; border: 1px solid #E50914; margin-bottom: 10px;">
+                {chave}
+            </div>
+        """, unsafe_allow_html=True)
+        
         if st.button("NOVA CHAVE"):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
             st.rerun()
