@@ -130,7 +130,7 @@ elif st.session_state.tela == "painel_membro":
         st.rerun()
 
 elif st.session_state.tela == "chat":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>💬 CHAT AO VIVO</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>EM PREPARAÇÃO</h1>", unsafe_allow_html=True)
     st.text_area("Mensagens", value="Sistema pronto.", height=300, label_visibility="collapsed")
     c_msg, c_send = st.columns([4, 1])
     with c_msg: st.text_input("Sua mensagem...", label_visibility="collapsed")
