@@ -6,7 +6,7 @@ import random
 st.set_page_config(
     page_title="KERIGMA | Sistema", 
     layout="wide", 
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded" # Mantém a barra aberta ao iniciar
 )
 
 # --- INICIALIZAÇÃO DE ESTADOS ---
@@ -20,14 +20,14 @@ if 'texto_mural' not in st.session_state:
 # 2. CSS MASTER
 st.markdown("""
     <style>
-    header, [data-testid="stHeader"] { display: none !important; }
+    /* Removido: display:none do header para permitir acesso ao menu em telas menores */
     
     .stApp {
         margin-top: -50px !important;
         background-color: #050505;
     }
 
-    button[title="Collapse sidebar"], [data-testid="sidebar-button"] { display: none !important; }
+    /* Removido: display:none do sidebar-button para garantir que a barra possa ser controlada */
 
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
@@ -95,10 +95,18 @@ st.markdown("""
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900; margin-bottom:20px;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
-    if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
-    if st.button("🔴 MEMBROS MÍDIA"): st.session_state.tela = "login_membro"; st.rerun()
-    if st.button("💬 CHAT"): st.session_state.tela = "chat"; st.rerun()
-    if st.button("⚙️ KERIGMA ADM"): st.session_state.tela = "login_admin"; st.rerun()
+    if st.button("🏠 HOME"): 
+        st.session_state.tela = "home"
+        st.rerun()
+    if st.button("🔴 MEMBROS MÍDIA"): 
+        st.session_state.tela = "login_membro"
+        st.rerun()
+    if st.button("💬 CHAT"): 
+        st.session_state.tela = "chat"
+        st.rerun()
+    if st.button("⚙️ KERIGMA ADM"): 
+        st.session_state.tela = "login_admin"
+        st.rerun()
     st.write("---")
 
 # 4. LÓGICA DE TELAS
@@ -133,7 +141,7 @@ elif st.session_state.tela == "chat":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>EM PREPARAÇÃO</h1>", unsafe_allow_html=True)
     st.text_area("Mensagens", value="Sistema pronto.", height=300, label_visibility="collapsed")
     c_msg, c_send = st.columns([4, 1])
-    with c_msg: st.text_input("Sua mensagem...", label_visibility="collapsed")
+    with c_msg: st.text_input("Sua mensagem...", key="msg_input", label_visibility="collapsed")
     with c_send: st.button("ENVIAR")
 
 elif st.session_state.tela == "login_admin":
@@ -142,7 +150,9 @@ elif st.session_state.tela == "login_admin":
     with col_adm:
         senha = st.text_input("Senha Master", type="password")
         if st.button("ACESSAR SALA ADM"):
-            if senha == "55420": st.session_state.tela = "master"; st.rerun()
+            if senha == "55420": 
+                st.session_state.tela = "master"
+                st.rerun()
 
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL MÍDIA</h1>", unsafe_allow_html=True)
@@ -163,5 +173,5 @@ elif st.session_state.tela == "master":
             st.rerun()
     with c3:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>🔔 NOTIF.</p>", unsafe_allow_html=True)
-        st.text_input("Assunto", label_visibility="collapsed")
+        st.text_input("Assunto", key="notif_input", label_visibility="collapsed")
         st.button("ENVIAR")
