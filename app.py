@@ -43,23 +43,27 @@ if 'chave_gerada' not in st.session_state:
 if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 
-# 2. CSS MASTER (ORIGINAL COM BORDA)
+# 2. CSS MASTER (BORDA LATERAL BLINDADA)
 st.markdown("""
     <style>
     header {visibility: hidden;}
     .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
     
-    /* SIDEBAR COM BORDA VERMELHA FIXA */
+    /* BLOCO DA BORDA - TRAVAMENTO TOTAL */
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
-        border-right: 2px solid #E50914 !important;
+        border-right: 2px solid #E50914 !important; /* LINHA VERMELHA */
         min-width: 260px !important;
-        margin-left: 0 !important;
+        max-width: 260px !important;
+        position: fixed !important;
+        height: 100vh !important;
         transform: none !important;
         display: block !important;
+        z-index: 999999 !important;
+        transition: none !important;
     }
 
-    /* OCULTAR BOTÕES DE RECOLHER */
+    /* OCULTAR BOTÕES QUE ESCONDEM A BORDA */
     [data-testid="sidebar-button"], 
     button[title="Collapse sidebar"], 
     button[title="Expand sidebar"] {
