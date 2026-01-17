@@ -44,8 +44,6 @@ if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 if 'sorteados' not in st.session_state:
     st.session_state.sorteados = []
-if 'usuarios_registrados' not in st.session_state:
-    st.session_state.usuarios_registrados = carregar_usuarios()
 
 # 2. CSS MASTER
 st.markdown("""
@@ -77,7 +75,7 @@ st.markdown("""
         border-radius: 8px !important;
         border: none !important;
         width: 100% !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 10px !important;
     }
 
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
@@ -85,6 +83,7 @@ st.markdown("""
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 5px !important;
+        border: none !important;
     }
 
     .stTextInput input { background-color: white !important; color: black !important; font-weight: 600 !important; }
@@ -98,10 +97,18 @@ st.markdown("""
         background-color: #0a0a0a; 
         margin-top: 100px; 
     }
+
+    .nome-sorteado {
+        background-color: #1a1a1a;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 5px solid #28a745;
+        margin-bottom: 10px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL (OPÇÕES)
+# 3. BARRA LATERAL
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
@@ -148,65 +155,87 @@ elif st.session_state.tela == "login_membro":
                 registrados = carregar_usuarios()
                 if nome_i in registrados and registrados[nome_i] == chave_i:
                     st.session_state.autenticado = True
-                    st.session_state.tela = "painel_membro"
-                    st.rerun()
+                    st.session_state.tela = "painel_membro"; st.rerun()
                 elif chave_i not in registrados.values() and nome_i not in registrados:
                     salvar_usuario_no_arquivo(nome_i, chave_i)
                     st.session_state.autenticado = True
-                    st.session_state.tela = "painel_membro"
-                    st.rerun()
+                    st.session_state.tela = "painel_membro"; st.rerun()
                 else:
                     st.error("Credenciais inválidas ou chave em uso.")
 
 elif st.session_state.tela == "painel_membro":
     if not st.session_state.autenticado: 
-        st.session_state.tela = "login_membro"
-        st.rerun()
+        st.session_state.tela = "login_membro"; st.rerun()
     st.markdown('<div class="janela-desenvolvimento"><h1 style="color:#E50914; font-size:40px; font-weight:900;">EM DESENVOLVIMENTO</h1><p>Seu acesso está ativo.</p></div>', unsafe_allow_html=True)
 
 elif st.session_state.tela == "master":
     if not st.session_state.autenticado:
-        st.session_state.tela = "login_admin"
-        st.rerun()
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL MÍDIA</h1>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "---")
-        if st.button("GERAR CHAVE"):
+        st.session_state.tela = "login_admin"; st.rerun()
+
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL DE CONTROLE ADM</h1>", unsafe_allow_html=True)
+    st.write("---")
+    
+    col_gerador, col_gestao = st.columns(2)
+    
+    with col_gerador:
+        st.markdown("<h3 style='text-align:center;'>🔑 Gestão de Chaves</h3>", unsafe_allow_html=True)
+        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "NENHUMA CHAVE GERADA", language="")
+        if st.button("GERAR NOVA CHAVE DE ACESSO", use_container_width=True):
             st.session_state.chave_gerada = str(random.randint(100000, 999999))
             st.rerun()
-        if st.button("👥 LISTA DE USUÁRIOS"):
-            st.session_state.tela = "lista_usuarios"
-            st.rerun()
-    with c2:
-        mural = st.text_area("Mural de Avisos", value=st.session_state.texto_mural)
-        if st.button("ATUALIZAR MURAL"):
-            st.session_state.texto_mural = mural
-            st.rerun()
+            
+    with col_gestao:
+        st.markdown("<h3 style='text-align:center;'>👥 Gestão de Membros</h3>", unsafe_allow_html=True)
+        st.write("") 
+        if st.button("VER USUÁRIOS INSCRITOS", use_container_width=True):
+            st.session_state.tela = "lista_usuarios"; st.rerun()
+        if st.button("REALIZAR SORTEIO DE ESCALA", use_container_width=True):
+            st.session_state.tela = "sorteio"; st.rerun()
 
 elif st.session_state.tela == "lista_usuarios":
     if not st.session_state.autenticado:
-        st.session_state.tela = "login_admin"
-        st.rerun()
+        st.session_state.tela = "login_admin"; st.rerun()
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>USUÁRIOS INSCRITOS</h1>", unsafe_allow_html=True)
     usrs = carregar_usuarios()
-    for u, c in usrs.items():
-        col_txt, col_del = st.columns([0.8, 0.2])
-        col_txt.markdown(f"**{u}** (Chave: {c})")
-        if col_del.button("🗑️", key=u):
-            remover_usuario_do_arquivo(u)
-            st.rerun()
-    if st.button("VOLTAR"):
-        st.session_state.tela = "master"
-        st.rerun()
+    if usrs:
+        for u, c in usrs.items():
+            col_txt, col_del = st.columns([0.85, 0.15])
+            col_txt.markdown(f'<div style="background-color:#1a1a1a; padding:10px; border-radius:5px; border-left:3px solid #E50914;"><b>{u}</b> <span style="color:#888; float:right;">Chave: {c}</span></div>', unsafe_allow_html=True)
+            if col_del.button("🗑️", key=u):
+                remover_usuario_do_arquivo(u); st.rerun()
+    else:
+        st.warning("Nenhum usuário cadastrado.")
+    if st.button("VOLTAR AO PAINEL"):
+        st.session_state.tela = "master"; st.rerun()
+
+elif st.session_state.tela == "sorteio":
+    if not st.session_state.autenticado:
+        st.session_state.tela = "login_admin"; st.rerun()
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>SORTEIO DE ESCALA</h1>", unsafe_allow_html=True)
+    usrs = carregar_usuarios()
+    lista_nomes = list(usrs.keys())
+    
+    _, col_sorteio, _ = st.columns([1, 2, 1])
+    with col_sorteio:
+        if len(lista_nomes) >= 2:
+            if st.button("REALIZAR SORTEIO", use_container_width=True):
+                st.session_state.sorteados = random.sample(lista_nomes, 2)
+            if st.session_state.sorteados:
+                for pessoa in st.session_state.sorteados:
+                    st.markdown(f'<div class="nome-sorteado"><span style="color:white; font-size:18px;">{pessoa}</span><span style="float:right;">✅</span></div>', unsafe_allow_html=True)
+        else:
+            st.error("É necessário pelo menos 2 usuários cadastrados para o sorteio.")
+        if st.button("VOLTAR AO PAINEL"): st.session_state.tela = "master"; st.rerun()
 
 elif st.session_state.tela == "login_admin":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
     _, col_adm, _ = st.columns([1, 1, 1])
     with col_adm:
         senha_m = st.text_input("Senha Master", type="password")
-        if st.button("ENTRAR ADM"):
+        if st.button("ENTRAR NO PAINEL ADM", use_container_width=True):
             if senha_m == "55420":
                 st.session_state.autenticado = True
                 st.session_state.tela = "master"
                 st.rerun()
+            else:
+                st.error("Senha incorreta.")
