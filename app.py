@@ -34,65 +34,46 @@ def remover_usuario_do_arquivo(id_para_remover):
         with open("usuarios_kerigma.json", "w") as f:
             json.dump(usuarios, f)
 
-# --- INICIALIZAÇÃO DE ESTADOS ---
-if 'tela' not in st.session_state: 
-    st.session_state.tela = "home"
-if 'autenticado' not in st.session_state:
-    st.session_state.autenticado = False
-if 'chave_gerada' not in st.session_state: 
-    st.session_state.chave_gerada = ""
-if 'id_gerado' not in st.session_state: 
-    st.session_state.id_gerado = ""
-if 'texto_mural' not in st.session_state:
-    st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
+# --- INICIALIZAÇÃO DE ESTADOS (LOGINS INDIVIDUAIS) ---
+if 'tela' not in st.session_state: st.session_state.tela = "home"
+if 'autenticado_membro' not in st.session_state: st.session_state.autenticado_membro = False
+if 'autenticado_adm' not in st.session_state: st.session_state.autenticado_adm = False
+if 'chave_gerada' not in st.session_state: st.session_state.chave_gerada = ""
+if 'id_gerado' not in st.session_state: st.session_state.id_gerado = ""
+if 'texto_mural' not in st.session_state: st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 
-# 2. CSS MASTER (ORIGINAL COM BORDA LATERAL FIXA)
+# 2. CSS MASTER (BORDA LATERAL FIXA E DESIGN ORIGINAL)
 st.markdown("""
     <style>
     header {visibility: hidden;}
-    .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
+    .block-container { padding-top: 0rem !important; }
     
-    /* SIDEBAR COM BORDA VERMELHA FIXA */
     [data-testid="stSidebar"] {
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
         min-width: 260px !important;
-        margin-left: 0 !important;
-        transform: none !important;
-        display: block !important;
         position: fixed !important;
         height: 100vh !important;
+        transform: none !important;
         z-index: 999999 !important;
     }
 
-    /* OCULTAR BOTÕES DE RECOLHER */
-    [data-testid="sidebar-button"], 
-    button[title="Collapse sidebar"], 
-    button[title="Expand sidebar"] {
-        display: none !important;
-    }
+    [data-testid="sidebar-button"], button[title*="sidebar"] { display: none !important; }
 
     .stApp { background-color: #050505; }
     
-    /* BOTÕES DA SIDEBAR */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
         font-weight: 700 !important;
-        height: 40px !important;
         border-radius: 8px !important;
-        border: none !important;
-        width: 100% !important;
         margin-bottom: 10px !important;
     }
 
-    /* BOTÕES GERAIS */
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
         background-color: #E50914 !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
-        border-radius: 5px !important;
-        border: none !important;
     }
 
     .stTextInput input { background-color: white !important; color: black !important; font-weight: 600 !important; }
@@ -106,14 +87,6 @@ st.markdown("""
         background-color: #0a0a0a; 
         margin-top: 100px; 
     }
-
-    .card-adm {
-        background-color: #111;
-        padding: 20px;
-        border: 1px dashed #E50914;
-        border-radius: 10px;
-        text-align: center;
-    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -125,18 +98,22 @@ with st.sidebar:
     if st.button("🏠 HOME"): 
         st.session_state.tela = "home"; st.rerun()
     
+    # Membro só entra no painel se estiver logado como membro
     if st.button("🔴 MEMBROS MÍDIA"): 
-        st.session_state.tela = "painel_membro" if st.session_state.autenticado else "login_membro"
+        st.session_state.tela = "painel_membro" if st.session_state.autenticado_membro else "login_membro"
         st.rerun()
         
+    # ADM só entra no painel se estiver logado como ADM
     if st.button("⚙️ KERIGMA ADM"): 
-        st.session_state.tela = "master" if st.session_state.autenticado else "login_admin"
+        st.session_state.tela = "master" if st.session_state.autenticado_adm else "login_admin"
         st.rerun()
     
-    if st.session_state.autenticado:
+    if st.session_state.autenticado_membro or st.session_state.autenticado_adm:
         st.write("---")
-        if st.button("🚪 SAIR DA CONTA"):
-            st.session_state.autenticado = False; st.session_state.tela = "home"; st.rerun()
+        if st.button("🚪 SAIR"):
+            st.session_state.autenticado_membro = False
+            st.session_state.autenticado_adm = False
+            st.session_state.tela = "home"; st.rerun()
     st.write("---")
 
 # 4. LÓGICA DE TELAS
@@ -145,61 +122,58 @@ if st.session_state.tela == "home":
     st.markdown(f'<div style="text-align:center; margin-top:30px; padding:40px; border:1px solid #E50914; border-radius:10px;"><p style="color:#E50914; font-weight:bold; font-size:12px;">MURAL DE AVISOS</p><h2 style="font-weight:300;">{st.session_state.texto_mural}</h2></div>', unsafe_allow_html=True)
 
 elif st.session_state.tela == "login_membro":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ACESSO MEMBRO</h1>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.5, 1])
     with col:
-        user_input = st.text_input("ID DE USUÁRIO").strip().upper()
-        chave_i = st.text_input("CHAVE", type="password").strip()
+        u_m = st.text_input("ID DE USUÁRIO").strip().upper()
+        c_m = st.text_input("CHAVE", type="password").strip()
         if st.button("ENTRAR", use_container_width=True):
-            usuarios = carregar_usuarios()
-            if user_input in usuarios and usuarios[user_input] == chave_i:
-                st.session_state.autenticado = True; st.session_state.tela = "painel_membro"; st.rerun()
-            else:
-                st.error("Dados de acesso incorretos.")
+            db = carregar_usuarios()
+            if u_m in db and db[u_m] == c_m:
+                st.session_state.autenticado_membro = True; st.session_state.tela = "painel_membro"; st.rerun()
+            else: st.error("ID ou Chave incorretos.")
 
 elif st.session_state.tela == "master":
-    if not st.session_state.autenticado: st.session_state.tela = "login_admin"; st.rerun()
+    if not st.session_state.autenticado_adm: st.rerun()
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL ADM</h1>", unsafe_allow_html=True)
     st.write("---")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<h3 style='text-align:center;'>🔑 Gerar Credenciais</h3>", unsafe_allow_html=True)
-        st.markdown(f"""
-        <div class="card-adm">
-            <p style="color:#888; margin:0;">ID GERADO</p>
-            <h2 style="color:white; margin:0;">{st.session_state.id_gerado if st.session_state.id_gerado else '---'}</h2>
-            <p style="color:#888; margin:10px 0 0 0;">CHAVE</p>
-            <h2 style="color:white; margin:0;">{st.session_state.chave_gerada if st.session_state.chave_gerada else '---'}</h2>
-        </div>
-        """, unsafe_allow_html=True)
         if st.button("GERAR NOVO ACESSO", use_container_width=True):
             st.session_state.id_gerado = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
             st.session_state.chave_gerada = ''.join(random.choices(string.digits, k=6))
             salvar_usuario_no_arquivo(st.session_state.id_gerado, st.session_state.chave_gerada)
             st.rerun()
+        
+        if st.session_state.id_gerado:
+            st.write("Clique no ícone à direita para copiar tudo:")
+            texto_copiar = f"USUÁRIO: {st.session_state.id_gerado}\nCHAVE: {st.session_state.chave_gerada}"
+            st.code(texto_copiar, language="text")
+
     with c2:
-        st.markdown("<h3 style='text-align:center;'>👥 Membros</h3>", unsafe_allow_html=True)
-        if st.button("VER USUÁRIOS INSCRITOS", use_container_width=True):
+        st.markdown("<h3 style='text-align:center;'>👥 Lista de Acessos</h3>", unsafe_allow_html=True)
+        if st.button("VER/EDITAR USUÁRIOS", use_container_width=True):
             st.session_state.tela = "lista_usuarios"; st.rerun()
 
 elif st.session_state.tela == "lista_usuarios":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>USUÁRIOS</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>GERENCIAR MEMBROS</h1>", unsafe_allow_html=True)
     usrs = carregar_usuarios()
     for u, c in usrs.items():
         col_t, col_d = st.columns([0.85, 0.15])
-        col_t.markdown(f'<div style="background-color:#1a1a1a; padding:10px; border-radius:5px; border-left:3px solid #E50914;">ID: <b>{u}</b> <span style="color:#888; float:right;">Chave: {c}</span></div>', unsafe_allow_html=True)
+        col_t.markdown(f'<div style="background-color:#1a1a1a; padding:10px; border-radius:5px; border-left:3px solid #E50914;">ID: <b>{u}</b> | Chave: <b>{c}</b></div>', unsafe_allow_html=True)
         if col_d.button("🗑️", key=u): remover_usuario_do_arquivo(u); st.rerun()
     if st.button("VOLTAR AO PAINEL"): st.session_state.tela = "master"; st.rerun()
 
 elif st.session_state.tela == "painel_membro":
-    st.markdown('<div class="janela-desenvolvimento"><h1 style="color:#E50914; font-size:40px; font-weight:900;">SISTEMA LOGADO</h1><p>Bem-vindo à área de membros da Mídia Maanaim.</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="janela-desenvolvimento"><h1 style="color:#E50914; font-size:40px; font-weight:900;">PAINEL DO MEMBRO</h1><p>Bem-vindo à Mídia Maanaim.</p></div>', unsafe_allow_html=True)
 
 elif st.session_state.tela == "login_admin":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ADM</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ACESSO ADM</h1>", unsafe_allow_html=True)
     _, col_adm, _ = st.columns([1, 1, 1])
     with col_adm:
         senha_m = st.text_input("Senha Master", type="password")
         if st.button("ENTRAR ADM", use_container_width=True):
             if senha_m == "55420":
-                st.session_state.autenticado = True; st.session_state.tela = "master"; st.rerun()
-            else: st.error("Senha Master incorreta.")
+                st.session_state.autenticado_adm = True; st.session_state.tela = "master"; st.rerun()
+            else: st.error("Senha incorreta.")
