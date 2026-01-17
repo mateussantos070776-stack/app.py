@@ -18,7 +18,6 @@ if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 if 'sorteados' not in st.session_state:
     st.session_state.sorteados = []
-# NOVO: Dicionário para salvar o vínculo Nome -> Código
 if 'usuarios_registrados' not in st.session_state:
     st.session_state.usuarios_registrados = {}
 
@@ -127,7 +126,7 @@ if st.session_state.tela == "home":
         </div>
     """, unsafe_allow_html=True)
 
-# LOGIN MEMBRO COM TRAVA DE VÍNCULO ÚNICO
+# LOGIN MEMBRO
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.5, 1])
@@ -138,7 +137,6 @@ elif st.session_state.tela == "login_membro":
         with c1:
             if st.button("ENTRAR"):
                 if nome and chave:
-                    # LÓGICA DE VÍNCULO FIXO:
                     if nome in st.session_state.usuarios_registrados:
                         if st.session_state.usuarios_registrados[nome] == chave:
                             st.session_state.tela = "painel_membro"
@@ -185,12 +183,36 @@ elif st.session_state.tela == "master":
         if st.button("🎲 SORTEIO DE MÍDIA"):
             st.session_state.tela = "sorteio"
             st.rerun()
+        
+        if st.button("👥 USUÁRIOS INSCRITOS"):
+            st.session_state.tela = "lista_usuarios"
+            st.rerun()
 
     with c2:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>📢 MURAL</p>", unsafe_allow_html=True)
         novo_aviso = st.text_area("Novo aviso", height=100, label_visibility="collapsed")
         if st.button("PUBLICAR"):
             st.session_state.texto_mural = novo_aviso
+            st.rerun()
+
+# TELA DE LISTA DE USUÁRIOS (ADMIN)
+elif st.session_state.tela == "lista_usuarios":
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>USUÁRIOS INSCRITOS</h1>", unsafe_allow_html=True)
+    _, col_lista, _ = st.columns([1, 2, 1])
+    with col_lista:
+        if st.session_state.usuarios_registrados:
+            for usuario, codigo in st.session_state.usuarios_registrados.items():
+                st.markdown(f"""
+                    <div style="background-color:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; border-left:3px solid #E50914;">
+                        <span style="color:white; font-weight:bold;">{usuario}</span>
+                        <span style="color:#888; float:right;">Chave: {codigo}</span>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.warning("Nenhum usuário inscrito no momento.")
+        
+        if st.button("VOLTAR"):
+            st.session_state.tela = "master"
             st.rerun()
 
 # SORTEIO
