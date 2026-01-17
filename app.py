@@ -42,136 +42,140 @@ if 'chave_gerada' not in st.session_state:
     st.session_state.chave_gerada = ""
 if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
-if 'menu_aberto' not in st.session_state:
-    st.session_state.menu_aberto = False
 
-# 2. CSS MASTER (FIXO PC + RESPONSIVO MOBILE)
-# Define se o menu mobile está visível baseado no estado
-mobile_menu_css = "block" if st.session_state.menu_aberto else "none"
-
-st.markdown(f"""
+# 2. CSS MASTER ORIGINAL
+st.markdown("""
     <style>
-    header {{visibility: hidden;}}
-    .block-container {{ padding-top: 1rem !important; }}
+    header {visibility: hidden;}
+    .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
     
-    /* --- LAYOUT PARA PC (Telas > 768px) --- */
-    [data-testid="stSidebar"] {{
+    [data-testid="sidebar-button"], 
+    button[title="Collapse sidebar"], 
+    button[title="Expand sidebar"] {
+        display: none !important;
+    }
+
+    [data-testid="stSidebar"] {
         background-color: #080808 !important;
         border-right: 2px solid #E50914 !important;
         min-width: 260px !important;
-        display: block !important; /* Sempre visível no PC */
-    }}
+        margin-left: 0 !important;
+        transform: none !important;
+    }
 
-    /* Esconder o botão de menu no PC */
-    .btn-mobile {{ display: none; }}
-
-    /* --- LAYOUT PARA CELULAR (Telas <= 768px) --- */
-    @media (max-width: 768px) {{
-        [data-testid="stSidebar"] {{
-            display: {mobile_menu_css} !important;
-            position: fixed !important;
-            width: 85% !important;
-            z-index: 99999;
-            border-right: 3px solid #E50914 !important;
-        }}
-        
-        .btn-mobile {{
-            display: block !important;
-            margin-bottom: 20px;
-        }}
-    }}
-
-    /* Estilos Gerais */
-    .stApp {{ background-color: #050505; }}
-    [data-testid="sidebar-button"] {{ display: none !important; }}
+    .stApp { background-color: #050505; }
     
-    .stSidebar .stButton > button {{
+    .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
-        color: white !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
+        height: 40px !important;
         border-radius: 8px !important;
+        border: none !important;
         width: 100% !important;
-    }}
+        margin-bottom: 10px !important;
+    }
 
-    .stTextInput input {{ background-color: white !important; color: black !important; font-weight: 600 !important; }}
-    h1, h2, h3, p {{ color: white !important; font-family: 'Montserrat', sans-serif; }}
+    div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
+        background-color: #E50914 !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 5px !important;
+        border: none !important;
+    }
+
+    .stTextInput input { background-color: white !important; color: black !important; font-weight: 600 !important; }
+    h1, h2, h3, p { color: white !important; font-family: 'Montserrat', sans-serif; }
+    
+    .janela-desenvolvimento { 
+        border: 2px solid #E50914; 
+        border-radius: 15px; 
+        padding: 60px; 
+        text-align: center; 
+        background-color: #0a0a0a; 
+        margin-top: 100px; 
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BOTÃO DE MENU (Aparece apenas no celular via CSS)
-st.markdown('<div class="btn-mobile">', unsafe_allow_html=True)
-if st.button("☰ MENU" if not st.session_state.menu_aberto else "✖ FECHAR"):
-    st.session_state.menu_aberto = not st.session_state.menu_aberto
-    st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
-
-# 4. BARRA LATERAL (SIDEBAR)
+# 3. BARRA LATERAL
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
     
     if st.button("🏠 HOME"): 
-        st.session_state.tela = "home"; st.session_state.menu_aberto = False; st.rerun()
+        st.session_state.tela = "home"; st.rerun()
     
     if st.button("🔴 MEMBROS MÍDIA"): 
         st.session_state.tela = "painel_membro" if st.session_state.autenticado else "login_membro"
-        st.session_state.menu_aberto = False; st.rerun()
+        st.rerun()
         
     if st.button("⚙️ KERIGMA ADM"): 
         st.session_state.tela = "master" if st.session_state.autenticado else "login_admin"
-        st.session_state.menu_aberto = False; st.rerun()
+        st.rerun()
     
     if st.session_state.autenticado:
         st.write("---")
         if st.button("🚪 SAIR DA CONTA"):
-            st.session_state.autenticado = False; st.session_state.tela = "home"
-            st.session_state.menu_aberto = False; st.rerun()
+            st.session_state.autenticado = False; st.session_state.tela = "home"; st.rerun()
     st.write("---")
 
-# 5. CONTEÚDO PRINCIPAL
+# 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
-    st.markdown('<h1 style="color:#E50914; text-align:center; margin-top:20px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color:#E50914; text-align:center; margin-top:50px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
     st.markdown(f'<div style="text-align:center; margin-top:30px; padding:40px; border:1px solid #E50914; border-radius:10px;"><p style="color:#E50914; font-weight:bold; font-size:12px;">MURAL DE AVISOS</p><h2 style="font-weight:300;">{st.session_state.texto_mural}</h2></div>', unsafe_allow_html=True)
 
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
-    nome_i = st.text_input("Nome Completo").strip().upper()
-    chave_i = st.text_input("Chave", type="password").strip()
-    if st.button("ENTRAR", use_container_width=True):
-        reg = carregar_usuarios()
-        if nome_i in reg and reg[nome_i] == chave_i:
-            st.session_state.autenticado = True; st.session_state.tela = "painel_membro"; st.rerun()
-        elif chave_i not in reg.values() and nome_i not in reg and nome_i != "":
-            salvar_usuario_no_arquivo(nome_i, chave_i)
-            st.session_state.autenticado = True; st.session_state.tela = "painel_membro"; st.rerun()
-        else: st.error("Dados inválidos ou em uso.")
+    _, col, _ = st.columns([1, 1.5, 1])
+    with col:
+        nome_i = st.text_input("Nome Completo").strip().upper()
+        chave_i = st.text_input("Chave", type="password").strip()
+        if st.button("ENTRAR", use_container_width=True):
+            if nome_i and chave_i:
+                reg = carregar_usuarios()
+                if nome_i in reg and reg[nome_i] == chave_i:
+                    st.session_state.autenticado = True; st.session_state.tela = "painel_membro"; st.rerun()
+                elif chave_i not in reg.values() and nome_i not in reg:
+                    salvar_usuario_no_arquivo(nome_i, chave_i)
+                    st.session_state.autenticado = True; st.session_state.tela = "painel_membro"; st.rerun()
+                else: st.error("Dados inválidos ou chave em uso.")
+
+elif st.session_state.tela == "painel_membro":
+    if not st.session_state.autenticado: st.session_state.tela = "login_membro"; st.rerun()
+    st.markdown('<div class="janela-desenvolvimento"><h1 style="color:#E50914; font-size:40px; font-weight:900;">EM DESENVOLVIMENTO</h1><p>Sessão ativa.</p></div>', unsafe_allow_html=True)
 
 elif st.session_state.tela == "master":
     if not st.session_state.autenticado: st.session_state.tela = "login_admin"; st.rerun()
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL ADM</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>PAINEL DE CONTROLE ADM</h1>", unsafe_allow_html=True)
+    st.write("---")
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<h3 style='text-align:center;'>🔑 Chaves</h3>", unsafe_allow_html=True)
-        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "---")
+        st.markdown("<h3 style='text-align:center;'>🔑 Gestão de Chaves</h3>", unsafe_allow_html=True)
+        st.code(st.session_state.chave_gerada if st.session_state.chave_gerada else "NENHUMA CHAVE", language="")
         if st.button("GERAR NOVA CHAVE", use_container_width=True):
             st.session_state.chave_gerada = str(random.randint(100000, 999999)); st.rerun()
     with c2:
-        st.markdown("<h3 style='text-align:center;'>👥 Membros</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align:center;'>👥 Gestão de Membros</h3>", unsafe_allow_html=True)
         if st.button("VER USUÁRIOS INSCRITOS", use_container_width=True):
             st.session_state.tela = "lista_usuarios"; st.rerun()
 
 elif st.session_state.tela == "lista_usuarios":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>MEMBROS</h1>", unsafe_allow_html=True)
+    if not st.session_state.autenticado: st.session_state.tela = "login_admin"; st.rerun()
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>USUÁRIOS</h1>", unsafe_allow_html=True)
     usrs = carregar_usuarios()
     for u, c in usrs.items():
-        col_t, col_d = st.columns([0.8, 0.2])
-        col_t.markdown(f'<div style="background:#1a1a1a; padding:10px; border-radius:5px; border-left:3px solid #E50914;">{u} - {c}</div>', unsafe_allow_html=True)
+        col_t, col_d = st.columns([0.85, 0.15])
+        col_t.markdown(f'<div style="background-color:#1a1a1a; padding:10px; border-radius:5px; border-left:3px solid #E50914;"><b>{u}</b> <span style="color:#888; float:right;">Chave: {c}</span></div>', unsafe_allow_html=True)
         if col_d.button("🗑️", key=u): remover_usuario_do_arquivo(u); st.rerun()
-    if st.button("VOLTAR"): st.session_state.tela = "master"; st.rerun()
+    if st.button("VOLTAR AO PAINEL"): st.session_state.tela = "master"; st.rerun()
 
 elif st.session_state.tela == "login_admin":
-    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ACESSO ADM</h1>", unsafe_allow_html=True)
-    senha_m = st.text_input("Senha Master", type="password")
-    if st.button("ENTRAR ADM", use_container_width=True):
-        if senha_m == "55420":
-            st.session_state.autenticado = True; st.session_state.tela = "master"; st.rerun()
+    st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
+    _, col_adm, _ = st.columns([1, 1, 1])
+    with col_adm:
+        senha_m = st.text_input("Senha Master", type="password")
+        if st.button("ENTRAR ADM", use_container_width=True):
+            if senha_m == "55420":
+                st.session_state.autenticado = True; st.session_state.tela = "master"; st.rerun()
+            else: st.error("Senha incorreta.")
