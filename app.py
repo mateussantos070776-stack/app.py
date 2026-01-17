@@ -22,9 +22,18 @@ if 'sorteados' not in st.session_state:
 # LISTA DE MEMBROS PARA SORTEIO
 membros_equipe = ["Lucas Silva", "Ana Souza", "Mateus Oliveira", "Bárbara Reis", "João Pedro", "Clara Mendes", "Rafael Vaz"]
 
-# 2. CSS MASTER (Baseado nas suas imagens)
+# 2. CSS MASTER (Com correção para remover a borda branca superior)
 st.markdown("""
     <style>
+    /* REMOVE A BARRA BRANCA/HEADER DO STREAMLIT */
+    header {visibility: hidden;}
+    
+    /* ELIMINA O ESPAÇO NO TOPO DO CONTEÚDO */
+    .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+    }
+
     /* FORÇA A BARRA LATERAL A FICAR EXPOSTA E SEM SETA */
     [data-testid="sidebar-button"], 
     button[title="Collapse sidebar"], 
@@ -42,7 +51,7 @@ st.markdown("""
 
     .stApp { background-color: #050505; }
 
-    /* BOTÕES DA SIDEBAR (CONFORME IMAGEM) */
+    /* BOTÕES DA SIDEBAR */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -83,19 +92,27 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRA LATERAL (Fixa conforme image_4cd36d.png)
+# 3. BARRA LATERAL
 with st.sidebar:
     st.markdown("<h2 style='color:#E50914; text-align:center; font-weight:900;'>SISTEMA KERIGMA</h2>", unsafe_allow_html=True)
     st.write("---")
-    if st.button("🏠 HOME"): st.session_state.tela = "home"; st.rerun()
-    if st.button("🔴 MEMBROS MÍDIA"): st.session_state.tela = "login_membro"; st.rerun()
-    if st.button("💬 CHAT"): st.session_state.tela = "chat"; st.rerun()
-    if st.button("⚙️ KERIGMA ADM"): st.session_state.tela = "login_admin"; st.rerun()
+    if st.button("🏠 HOME"): 
+        st.session_state.tela = "home"
+        st.rerun()
+    if st.button("🔴 MEMBROS MÍDIA"): 
+        st.session_state.tela = "login_membro"
+        st.rerun()
+    if st.button("💬 CHAT"): 
+        st.session_state.tela = "chat"
+        st.rerun()
+    if st.button("⚙️ KERIGMA ADM"): 
+        st.session_state.tela = "login_admin"
+        st.rerun()
     st.write("---")
 
 # 4. LÓGICA DE TELAS
 
-# TELA HOME (image_4cc4c7.png)
+# TELA HOME
 if st.session_state.tela == "home":
     st.markdown('<h1 style="color:#E50914; text-align:center; margin-top:50px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
     st.markdown(f"""
@@ -105,20 +122,17 @@ if st.session_state.tela == "home":
         </div>
     """, unsafe_allow_html=True)
 
-# TELA ÁREA DE MEMBROS (RESTAURADA)
+# TELA ÁREA DE MEMBROS
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
-    
-    # Criando colunas para centralizar os campos de login
     _, col, _ = st.columns([1, 1.5, 1])
     with col:
         nome = st.text_input("Nome Completo", placeholder="Digite seu nome...")
         chave = st.text_input("Chave de Acesso", type="password", placeholder="Sua chave...")
-        
         c1, c2 = st.columns(2)
         with c1:
             if st.button("ENTRAR"):
-                if nome and chave: # Lógica simples de validação
+                if nome and chave:
                     st.session_state.tela = "painel_membro"
                     st.rerun()
         with c2:
@@ -126,7 +140,7 @@ elif st.session_state.tela == "login_membro":
                 st.session_state.tela = "home"
                 st.rerun()
 
-# TELA CENTRAL MÍDIA (image_4cd36d.png)
+# TELA CENTRAL MÍDIA (ADMIN)
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL MÍDIA</h1>", unsafe_allow_html=True)
     st.write("---")
@@ -143,8 +157,6 @@ elif st.session_state.tela == "master":
         if st.button("🎲 SORTEIO DE MÍDIA"):
             st.session_state.tela = "sorteio"
             st.rerun()
-        if st.button("📸 FOTOS"): pass
-        if st.button("🎬 VÍDEOS"): pass
 
     with c2:
         st.markdown("<p style='color:#E50914; font-weight:bold;'>📢 MURAL</p>", unsafe_allow_html=True)
@@ -181,4 +193,6 @@ elif st.session_state.tela == "login_admin":
     with col_adm:
         senha = st.text_input("Senha Master", type="password")
         if st.button("ACESSAR"):
-            if senha == "55420": st.session_state.tela = "master"; st.rerun()
+            if senha == "55420": 
+                st.session_state.tela = "master"
+                st.rerun()
