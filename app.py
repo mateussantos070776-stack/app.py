@@ -26,6 +26,13 @@ def salvar_usuario_no_arquivo(nome, chave):
     with open("usuarios_kerigma.json", "w") as f:
         json.dump(usuarios, f)
 
+def remover_usuario_do_arquivo(nome_para_remover):
+    usuarios = carregar_usuarios()
+    if nome_para_remover in usuarios:
+        del usuarios[nome_para_remover]
+        with open("usuarios_kerigma.json", "w") as f:
+            json.dump(usuarios, f)
+
 # --- INICIALIZAÇÃO DE ESTADOS ---
 if 'tela' not in st.session_state: 
     st.session_state.tela = "home"
@@ -101,16 +108,13 @@ elif st.session_state.tela == "login_membro":
             if st.button("ENTRAR"):
                 if nome_input and chave_input:
                     st.session_state.usuarios_registrados = carregar_usuarios()
-                    # Regra 1: Se o nome já existe, a chave deve bater
                     if nome_input in st.session_state.usuarios_registrados:
                         if st.session_state.usuarios_registrados[nome_input] == chave_input:
                             st.session_state.tela = "painel_membro"; st.rerun()
                         else:
                             st.error("Chave incorreta para este usuário.")
-                    # Regra 2: Se a chave já pertence a outro nome, bloqueia
                     elif chave_input in st.session_state.usuarios_registrados.values():
                         st.error("Esta chave já foi utilizada por outro membro.")
-                    # Regra 3: Cadastro novo e único
                     else:
                         salvar_usuario_no_arquivo(nome_input, chave_input)
                         st.session_state.usuarios_registrados = carregar_usuarios()
@@ -144,8 +148,17 @@ elif st.session_state.tela == "lista_usuarios":
     _, col_lista, _ = st.columns([1, 2, 1])
     with col_lista:
         usuarios_finais = carregar_usuarios()
-        for u, c in usuarios_finais.items():
-            st.markdown(f'<div style="background-color:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; border-left:3px solid #E50914;"><span style="color:white; font-weight:bold;">{u}</span><span style="color:#888; float:right;">Chave: {c}</span></div>', unsafe_allow_html=True)
+        if usuarios_finais:
+            for usuario, codigo in usuarios_finais.items():
+                col_info, col_btn = st.columns([0.85, 0.15])
+                with col_info:
+                    st.markdown(f'<div style="background-color:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; border-left:3px solid #E50914;"><span style="color:white; font-weight:bold;">{usuario}</span><span style="color:#888; float:right;">Chave: {codigo}</span></div>', unsafe_allow_html=True)
+                with col_btn:
+                    if st.button("🗑️", key=f"del_{usuario}"):
+                        remover_usuario_do_arquivo(usuario)
+                        st.rerun()
+        else:
+            st.warning("Nenhum usuário inscrito.")
         if st.button("VOLTAR"): st.session_state.tela = "master"; st.rerun()
 
 elif st.session_state.tela == "login_admin":
