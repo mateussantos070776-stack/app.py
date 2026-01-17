@@ -34,15 +34,15 @@ def remover_usuario_do_arquivo(id_para_remover):
         with open("usuarios_kerigma.json", "w") as f:
             json.dump(usuarios, f)
 
-# --- INICIALIZAÇÃO DE ESTADOS (LOGINS INDIVIDUAIS) ---
+# --- INICIALIZAÇÃO DE ESTADOS ---
 if 'tela' not in st.session_state: st.session_state.tela = "home"
 if 'autenticado_membro' not in st.session_state: st.session_state.autenticado_membro = False
 if 'autenticado_adm' not in st.session_state: st.session_state.autenticado_adm = False
-if 'chave_gerada' not in st.session_state: st.session_state.chave_gerada = ""
 if 'id_gerado' not in st.session_state: st.session_state.id_gerado = ""
+if 'chave_gerada' not in st.session_state: st.session_state.chave_gerada = ""
 if 'texto_mural' not in st.session_state: st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 
-# 2. CSS MASTER (BORDA LATERAL FIXA E DESIGN ORIGINAL)
+# 2. CSS MASTER (BORDA LATERAL FIXA)
 st.markdown("""
     <style>
     header {visibility: hidden;}
@@ -59,7 +59,6 @@ st.markdown("""
     }
 
     [data-testid="sidebar-button"], button[title*="sidebar"] { display: none !important; }
-
     .stApp { background-color: #050505; }
     
     .stSidebar .stButton > button {
@@ -68,12 +67,6 @@ st.markdown("""
         font-weight: 700 !important;
         border-radius: 8px !important;
         margin-bottom: 10px !important;
-    }
-
-    div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
-        background-color: #E50914 !important;
-        color: #FFFFFF !important;
-        font-weight: bold !important;
     }
 
     .stTextInput input { background-color: white !important; color: black !important; font-weight: 600 !important; }
@@ -98,12 +91,10 @@ with st.sidebar:
     if st.button("🏠 HOME"): 
         st.session_state.tela = "home"; st.rerun()
     
-    # Membro só entra no painel se estiver logado como membro
     if st.button("🔴 MEMBROS MÍDIA"): 
         st.session_state.tela = "painel_membro" if st.session_state.autenticado_membro else "login_membro"
         st.rerun()
         
-    # ADM só entra no painel se estiver logado como ADM
     if st.button("⚙️ KERIGMA ADM"): 
         st.session_state.tela = "master" if st.session_state.autenticado_adm else "login_admin"
         st.rerun()
@@ -114,7 +105,6 @@ with st.sidebar:
             st.session_state.autenticado_membro = False
             st.session_state.autenticado_adm = False
             st.session_state.tela = "home"; st.rerun()
-    st.write("---")
 
 # 4. LÓGICA DE TELAS
 if st.session_state.tela == "home":
@@ -140,16 +130,24 @@ elif st.session_state.tela == "master":
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<h3 style='text-align:center;'>🔑 Gerar Credenciais</h3>", unsafe_allow_html=True)
-        if st.button("GERAR NOVO ACESSO", use_container_width=True):
-            st.session_state.id_gerado = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            st.session_state.chave_gerada = ''.join(random.choices(string.digits, k=6))
-            salvar_usuario_no_arquivo(st.session_state.id_gerado, st.session_state.chave_gerada)
-            st.rerun()
         
+        # Lógica de Geração sem Branco
+        if st.button("GERAR NOVO ACESSO", use_container_width=True):
+            novo_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            nova_chave = ''.join(random.choices(string.digits, k=6))
+            
+            # Salva no estado para exibição imediata
+            st.session_state.id_gerado = novo_id
+            st.session_state.chave_gerada = nova_chave
+            
+            # Salva no arquivo
+            salvar_usuario_no_arquivo(novo_id, nova_chave)
+
+        # Exibe se houver algo gerado
         if st.session_state.id_gerado:
-            st.write("Clique no ícone à direita para copiar tudo:")
-            texto_copiar = f"USUÁRIO: {st.session_state.id_gerado}\nCHAVE: {st.session_state.chave_gerada}"
-            st.code(texto_copiar, language="text")
+            st.write("Copia as credenciais abaixo:")
+            texto_formatado = f"USUÁRIO: {st.session_state.id_gerado}\nCHAVE: {st.session_state.chave_gerada}"
+            st.code(texto_formatado, language="text")
 
     with c2:
         st.markdown("<h3 style='text-align:center;'>👥 Lista de Acessos</h3>", unsafe_allow_html=True)
