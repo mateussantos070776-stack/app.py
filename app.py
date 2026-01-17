@@ -22,19 +22,16 @@ if 'sorteados' not in st.session_state:
 # LISTA DE MEMBROS PARA SORTEIO
 membros_equipe = ["Lucas Silva", "Ana Souza", "Mateus Oliveira", "Bárbara Reis", "João Pedro", "Clara Mendes", "Rafael Vaz"]
 
-# 2. CSS MASTER (Com correção para remover a borda branca superior)
+# 2. CSS MASTER
 st.markdown("""
     <style>
-    /* REMOVE A BARRA BRANCA/HEADER DO STREAMLIT */
     header {visibility: hidden;}
     
-    /* ELIMINA O ESPAÇO NO TOPO DO CONTEÚDO */
     .block-container {
         padding-top: 0rem !important;
         padding-bottom: 0rem !important;
     }
 
-    /* FORÇA A BARRA LATERAL A FICAR EXPOSTA E SEM SETA */
     [data-testid="sidebar-button"], 
     button[title="Collapse sidebar"], 
     button[title="Expand sidebar"] {
@@ -51,7 +48,6 @@ st.markdown("""
 
     .stApp { background-color: #050505; }
 
-    /* BOTÕES DA SIDEBAR */
     .stSidebar .stButton > button {
         background: linear-gradient(135deg, #E50914 0%, #9e070e 100%) !important;
         color: #FFFFFF !important;
@@ -63,7 +59,6 @@ st.markdown("""
         margin-bottom: 5px !important;
     }
 
-    /* BOTÕES GERAIS */
     div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
         background-color: #E50914 !important;
         color: #FFFFFF !important;
@@ -72,7 +67,6 @@ st.markdown("""
         border-radius: 5px !important;
     }
 
-    /* INPUTS BRANCOS */
     .stTextInput input {
         background-color: white !important;
         color: black !important;
@@ -81,13 +75,22 @@ st.markdown("""
 
     h1, h2, h3, p { color: white !important; font-family: 'Montserrat', sans-serif; }
     
-    /* CARD DE SORTEIO COM BORDA VERDE */
     .nome-sorteado {
         background-color: #1a1a1a;
         padding: 15px;
         border-radius: 10px;
         border-left: 5px solid #28a745;
         margin-bottom: 10px;
+    }
+
+    /* ESTILO PARA A JANELA CENTRALIZADA */
+    .janela-desenvolvimento {
+        border: 2px solid #E50914;
+        border-radius: 15px;
+        padding: 60px;
+        text-align: center;
+        background-color: #0a0a0a;
+        margin-top: 100px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -112,7 +115,7 @@ with st.sidebar:
 
 # 4. LÓGICA DE TELAS
 
-# TELA HOME
+# HOME
 if st.session_state.tela == "home":
     st.markdown('<h1 style="color:#E50914; text-align:center; margin-top:50px; font-weight:900;">EQUIPE MIDIA MAANAIM</h1>', unsafe_allow_html=True)
     st.markdown(f"""
@@ -122,7 +125,7 @@ if st.session_state.tela == "home":
         </div>
     """, unsafe_allow_html=True)
 
-# TELA ÁREA DE MEMBROS
+# LOGIN MEMBRO
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.5, 1])
@@ -140,7 +143,21 @@ elif st.session_state.tela == "login_membro":
                 st.session_state.tela = "home"
                 st.rerun()
 
-# TELA CENTRAL MÍDIA (ADMIN)
+# JANELA "EM DESENVOLVIMENTO" (CENTRALIZADA)
+elif st.session_state.tela == "painel_membro":
+    _, col_central, _ = st.columns([1, 2, 1])
+    with col_central:
+        st.markdown(f"""
+            <div class="janela-desenvolvimento">
+                <h1 style="color:#E50914; font-size:40px; font-weight:900;">EM DESENVOLVIMENTO</h1>
+                <p style="color:white; font-size:18px;">Esta seção estará disponível em breve.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("SAIR"):
+            st.session_state.tela = "home"
+            st.rerun()
+
+# CENTRAL MÍDIA (ADMIN)
 elif st.session_state.tela == "master":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>CENTRAL MÍDIA</h1>", unsafe_allow_html=True)
     st.write("---")
@@ -165,7 +182,7 @@ elif st.session_state.tela == "master":
             st.session_state.texto_mural = novo_aviso
             st.rerun()
 
-# TELA DE SORTEIO
+# SORTEIO
 elif st.session_state.tela == "sorteio":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>SORTEIO DE ESCALA</h1>", unsafe_allow_html=True)
     _, col_sorteio, _ = st.columns([1, 2, 1])
@@ -186,7 +203,7 @@ elif st.session_state.tela == "sorteio":
             st.session_state.tela = "master"
             st.rerun()
 
-# TELA LOGIN ADMIN
+# LOGIN ADMIN
 elif st.session_state.tela == "login_admin":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ACESSO LIDERANÇA</h1>", unsafe_allow_html=True)
     _, col_adm, _ = st.columns([1, 1.2, 1])
