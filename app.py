@@ -18,6 +18,9 @@ if 'texto_mural' not in st.session_state:
     st.session_state.texto_mural = "Bem-vindo à Equipe Mídia Maanaim"
 if 'sorteados' not in st.session_state:
     st.session_state.sorteados = []
+# NOVO: Dicionário para salvar o vínculo Nome -> Código
+if 'usuarios_registrados' not in st.session_state:
+    st.session_state.usuarios_registrados = {}
 
 # LISTA DE MEMBROS PARA SORTEIO
 membros_equipe = ["Lucas Silva", "Ana Souza", "Mateus Oliveira", "Bárbara Reis", "João Pedro", "Clara Mendes", "Rafael Vaz"]
@@ -83,7 +86,6 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
-    /* ESTILO PARA A JANELA CENTRALIZADA */
     .janela-desenvolvimento {
         border: 2px solid #E50914;
         border-radius: 15px;
@@ -125,7 +127,7 @@ if st.session_state.tela == "home":
         </div>
     """, unsafe_allow_html=True)
 
-# LOGIN MEMBRO
+# LOGIN MEMBRO COM TRAVA DE VÍNCULO ÚNICO
 elif st.session_state.tela == "login_membro":
     st.markdown("<h1 style='color:#E50914; text-align:center; font-weight:900;'>ÁREA DE MEMBROS</h1>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.5, 1])
@@ -136,14 +138,23 @@ elif st.session_state.tela == "login_membro":
         with c1:
             if st.button("ENTRAR"):
                 if nome and chave:
-                    st.session_state.tela = "painel_membro"
-                    st.rerun()
+                    # LÓGICA DE VÍNCULO FIXO:
+                    if nome in st.session_state.usuarios_registrados:
+                        if st.session_state.usuarios_registrados[nome] == chave:
+                            st.session_state.tela = "painel_membro"
+                            st.rerun()
+                        else:
+                            st.error("Código incorreto para este usuário.")
+                    else:
+                        st.session_state.usuarios_registrados[nome] = chave
+                        st.session_state.tela = "painel_membro"
+                        st.rerun()
         with c2:
             if st.button("VOLTAR"):
                 st.session_state.tela = "home"
                 st.rerun()
 
-# JANELA "EM DESENVOLVIMENTO" (CENTRALIZADA)
+# JANELA "EM DESENVOLVIMENTO"
 elif st.session_state.tela == "painel_membro":
     _, col_central, _ = st.columns([1, 2, 1])
     with col_central:
